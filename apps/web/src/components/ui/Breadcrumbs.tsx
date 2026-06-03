@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import Icon from './Icon'
 
 export interface BreadcrumbItem {
   label: string
@@ -13,19 +14,19 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
   if (items.length === 0) return null
 
   return (
-    <nav aria-label="Breadcrumb" className="mb-4">
-      <ol className="flex items-center gap-1.5 text-label-lg">
+    <nav aria-label="Breadcrumb" className="mb-stack-md">
+      <ol className="flex items-center gap-stack-sm text-label-lg">
         {items.map((item, i) => (
-          <li key={i} className="flex items-center gap-1.5">
+          <li key={i} className="flex items-center gap-stack-sm">
             {i > 0 && (
-              <span className="text-outline-variant select-none" aria-hidden="true">›</span>
+              <Icon name="chevron_right" className="text-[16px] text-outline" />
             )}
             {item.href ? (
               <Link to={item.href} className="text-brand-neutral transition-colors hover:text-primary">
                 {item.label}
               </Link>
             ) : (
-              <span className="text-on-surface font-medium">{item.label}</span>
+              <span className="text-on-surface-variant font-medium">{item.label}</span>
             )}
           </li>
         ))}

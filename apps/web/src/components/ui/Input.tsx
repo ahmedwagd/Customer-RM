@@ -1,13 +1,16 @@
 import { type InputHTMLAttributes, useId } from 'react'
+import Icon from './Icon'
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string
   error?: string
+  icon?: string
 }
 
 export default function Input({
   label,
   error,
+  icon,
   className = '',
   id: externalId,
   ...props
@@ -23,6 +26,7 @@ export default function Input({
         className={`
           peer block w-full rounded border bg-transparent px-3 pb-1 pt-5
           text-body-md text-on-surface outline-none transition-all
+          ${icon ? 'pl-10' : ''}
           ${
             error
               ? 'border-error'
@@ -33,10 +37,15 @@ export default function Input({
         `}
         {...props}
       />
+      {icon && (
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-outline">
+          <Icon name={icon} />
+        </span>
+      )}
       <label
         htmlFor={id}
         className={`
-          absolute left-3 top-1 origin-[0] text-label-sm transition-all
+          absolute left-${icon ? '10' : '3'} top-1 origin-[0] text-label-sm transition-all
           peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-body-md peer-placeholder-shown:text-brand-neutral
           peer-focus:top-1 peer-focus:text-label-sm
           ${

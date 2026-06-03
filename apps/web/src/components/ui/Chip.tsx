@@ -1,9 +1,12 @@
 import { type ReactNode } from 'react'
+import Icon from './Icon'
 
 interface ChipProps {
   children: ReactNode
   color?: string
   onRemove?: () => void
+  leadingIcon?: string
+  trailingIcon?: string
   className?: string
 }
 
@@ -11,6 +14,8 @@ export default function Chip({
   children,
   color = 'primary',
   onRemove,
+  leadingIcon,
+  trailingIcon,
   className = '',
 }: ChipProps) {
   const colorMap: Record<string, string> = {
@@ -27,16 +32,9 @@ export default function Chip({
     <span
       className={`inline-flex items-center gap-1 rounded px-2.5 py-0.5 text-label-sm font-medium ${bgColor} ${className}`}
     >
+      {leadingIcon && <Icon name={leadingIcon} className="text-[14px]" />}
       {children}
-      {onRemove && (
-        <button
-          type="button"
-          onClick={(e) => { e.stopPropagation(); onRemove() }}
-          className="ml-0.5 inline-flex items-center justify-center rounded-full p-0.5 hover:opacity-70"
-        >
-          ✕
-        </button>
-      )}
+      {trailingIcon && <Icon name={trailingIcon} className="text-[14px] cursor-pointer" onClick={trailingIcon === 'add' ? onRemove : undefined} />}
     </span>
   )
 }

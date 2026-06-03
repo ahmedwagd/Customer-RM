@@ -170,3 +170,21 @@
 @utility animate-slide-in-left {
   animation: slide-in-left 0.3s ease-out;
 }
+
+@utility p-stack-sm { padding: 8px; }
+@utility p-stack-md { padding: 16px; }
+@utility p-stack-lg { padding: 24px; }
+@utility m-stack-sm { margin: 8px; }
+@utility m-stack-md { margin: 16px; }
+@utility m-stack-lg { margin: 24px; }
+@utility gap-stack-sm { gap: 8px; }
+@utility gap-stack-md { gap: 16px; }
+@utility gap-stack-lg { gap: 24px; }
+@utility gap-gutter { gap: 16px; }
+@utility px-stack-sm { padding-left: 8px; padding-right: 8px; }
+@utility px-stack-md { padding-left: 16px; padding-right: 16px; }
+@utility px-stack-lg { padding-left: 24px; padding-right: 24px; }
+@utility py-stack-sm { padding-top: 8px; padding-bottom: 8px; }
+@utility py-stack-md { padding-top: 16px; padding-bottom: 16px; }
+@utility py-stack-lg { padding-top: 24px; padding-bottom: 24px; }
+@utility px-container-margin { padding-left: 24px; padding-right: 24px; }

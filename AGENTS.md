@@ -3,19 +3,20 @@
 ## Repo State
 
 Scaffold complete — core infra wired. Workspace layout:
+
 - `apps/web` — React frontend (Vite + React TS, Tailwind v4, React Router)
 - `apps/api` — NestJS backend (Prisma 7, adapter-based PostgreSQL client, Swagger at `/api/docs`)
 - `packages/shared` — shared types/utils (stub)
 
 ## Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Monorepo | Turbo |
-| Backend | NestJS |
-| Frontend | React |
-| ORM | Prisma 7 + PostgreSQL (Neon) |
-| Design | Material Design 3 (see `DESIGN.md`) |
+| Layer    | Technology                          |
+| -------- | ----------------------------------- |
+| Monorepo | Turbo                               |
+| Backend  | NestJS                              |
+| Frontend | React                               |
+| ORM      | Prisma 7 + PostgreSQL (Neon)        |
+| Design   | Material Design 3 (see `DESIGN.md`) |
 
 ## API Structure
 
@@ -40,6 +41,7 @@ apps/api/src/
 ## Key Files
 
 - `DESIGN.md` — design tokens, brand guidelines, component specs. The source of truth for UI implementation.
+- `templates/` - as UI Copomponents reference.
 - `turbo.json` — Turborepo pipeline config; run `pnpm dev` / `pnpm build` / `pnpm lint` etc.
 - `apps/api/prisma/schema.prisma` — Prisma schema (no `url` field; v7 convention).
 - `apps/api/prisma.config.ts` — Prisma config: migration URL sourced from `DATABASE_URL` env var.
@@ -52,15 +54,15 @@ apps/api/src/
 
 ## Workspace Commands
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Run all workspaces in dev mode |
-| `pnpm build` | Build all packages |
-| `pnpm lint` | Lint all packages |
-| `pnpm test` | Test all packages |
-| `pnpm typecheck` | Type-check all packages |
-| `pnpm turbo <task> --filter=<package>` | Run a task for a specific package |
-| `pnpm --filter=<package> add <dep>` | Add dependency to a specific workspace package |
+| Command                                | Description                                    |
+| -------------------------------------- | ---------------------------------------------- |
+| `pnpm dev`                             | Run all workspaces in dev mode                 |
+| `pnpm build`                           | Build all packages                             |
+| `pnpm lint`                            | Lint all packages                              |
+| `pnpm test`                            | Test all packages                              |
+| `pnpm typecheck`                       | Type-check all packages                        |
+| `pnpm turbo <task> --filter=<package>` | Run a task for a specific package              |
+| `pnpm --filter=<package> add <dep>`    | Add dependency to a specific workspace package |
 
 ## Prisma 7 Notes
 
