@@ -10,7 +10,7 @@ async function bootstrap() {
 
   app.use(cookieParser());
   app.enableCors({
-    origin: 'https://customer-rm-q5bgbt7tg-ahmed-wagdys-projects.vercel.app',
+    origin: 'customer-rm-web.vercel.app',
     credentials: true,
   });
 
