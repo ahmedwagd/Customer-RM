@@ -4,11 +4,11 @@ import TopBar from '../components/TopBar'
 
 export default function AppLayout() {
   return (
-    <div className="flex h-screen bg-[#ffffff]">
+    <div className="flex h-screen bg-surface-container-lowest">
       <Sidebar />
       <div className="flex flex-1 flex-col min-w-0">
         <TopBar />
-        <main className="flex-1 overflow-auto bg-[#f7f9ff] p-6">
+        <main className="flex-1 overflow-auto bg-surface p-6">
           <Outlet />
         </main>
       </div>

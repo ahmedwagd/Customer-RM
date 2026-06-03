@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom'
+import logo from '../assets/Ma5zan-logo.png'
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard' },
@@ -14,10 +15,10 @@ const navItems = [
 
 export default function Sidebar() {
   return (
-    <aside className="flex w-60 flex-col border-r border-[#e0e0e0] bg-[#f8f9fa]">
-      <div className="flex h-14 items-center px-6 border-b border-[#e0e0e0]">
-        <NavLink to="/dashboard" className="font-[Hanken_Grotesk] text-[22px] font-[500] leading-[28px] text-[#1a73e8] no-underline">
-          CRM
+    <aside className="flex w-60 flex-col border-r border-outline-variant bg-brand-surface-secondary">
+      <div className="flex items-center justify-center py-4 px-6 border-b border-outline-variant">
+        <NavLink to="/dashboard" className="flex items-center gap-2 no-underline">
+          <img src={logo} alt="Ma5zan" className="h-32 w-auto" />
         </NavLink>
       </div>
       <nav className="flex-1 overflow-y-auto py-2">
@@ -26,10 +27,10 @@ export default function Sidebar() {
             key={item.to}
             to={item.to}
             className={({ isActive }) =>
-              `flex items-center px-6 py-2.5 text-[14px] font-[500] leading-[20px] no-underline transition-colors ${
+              `flex items-center px-6 py-2.5 text-label-lg no-underline transition-colors ${
                 isActive
-                  ? 'bg-[#d8e2ff] text-[#004493]'
-                  : 'text-[#5f6368] hover:bg-[#e8eaed]'
+                  ? 'bg-primary-fixed text-on-primary-fixed-variant'
+                  : 'text-brand-neutral hover:bg-surface-container-high'
               }`
             }
           >

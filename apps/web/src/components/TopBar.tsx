@@ -13,20 +13,20 @@ export default function TopBar() {
     : '??'
 
   return (
-    <header className="flex h-14 items-center justify-between border-b border-[#e0e0e0] bg-[#ffffff] px-6">
-      <div className="font-[Inter] text-[16px] font-[500] leading-[24px] text-[#181c20]">
+    <header className="flex h-14 items-center justify-between border-b border-outline-variant bg-surface-container-lowest px-6">
+      <div className="font-body text-title-md text-on-surface">
         Welcome{user ? `, ${user.name}` : ''}
       </div>
       <div className="flex items-center gap-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1a73e8] text-[11px] font-[500] leading-[16px] text-[#ffffff]">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-container text-label-sm text-on-primary-container">
           {initials}
         </div>
-        <span className="font-[Inter] text-[14px] leading-[20px] text-[#5f6368]">
+        <span className="font-body text-body-md text-brand-neutral">
           {user?.email}
         </span>
         <button
           onClick={logout}
-          className="rounded-lg px-3 py-1.5 text-[14px] font-[500] leading-[20px] text-[#5f6368] transition-colors hover:bg-[#e8eaed]"
+          className="rounded px-3 py-1.5 text-label-lg text-brand-neutral transition-colors hover:bg-surface-container-high"
         >
           Logout
         </button>
