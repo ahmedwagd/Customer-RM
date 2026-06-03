@@ -4,7 +4,7 @@
 
 Scaffold complete — core infra wired. Workspace layout:
 - `apps/web` — React frontend (Vite + React TS, Tailwind v4, React Router)
-- `apps/api` — NestJS backend (Prisma 7, adapter-based PostgreSQL client)
+- `apps/api` — NestJS backend (Prisma 7, adapter-based PostgreSQL client, Swagger at `/api/docs`)
 - `packages/shared` — shared types/utils (stub)
 
 ## Stack
@@ -16,6 +16,26 @@ Scaffold complete — core infra wired. Workspace layout:
 | Frontend | React |
 | ORM | Prisma 7 + PostgreSQL (Neon) |
 | Design | Material Design 3 (see `DESIGN.md`) |
+
+## API Structure
+
+```
+apps/api/src/
+├── auth/                  # Auth module — JWT, refresh tokens
+│   ├── dto/
+│   ├── auth.controller.ts
+│   ├── auth.module.ts
+│   └── auth.service.ts
+├── commands/              # CLI commands (seed)
+├── common/                # Shared infra — decorators, guards, interceptors, strategies
+├── config/                # App configuration (env-based)
+├── modules/               # Domain modules (appointments, clinic, users, etc.)
+│   └── */                 # Each module: dto/, entities/, controller, module, service
+├── prisma/                # Prisma client adapter + seeding
+├── app.controller.ts
+├── app.module.ts
+└── main.ts
+```
 
 ## Key Files
 

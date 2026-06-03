@@ -16,6 +16,26 @@ A full-stack customer relationship management application built with a modern mo
 DATABASE_URL="postgresql://user:password@host:port/database?sslmode=require"
 ```
 
+## API Structure
+
+```
+apps/api/src/
+├── auth/                  # Auth module — JWT, refresh tokens
+│   ├── dto/
+│   ├── auth.controller.ts
+│   ├── auth.module.ts
+│   └── auth.service.ts
+├── commands/              # CLI commands (seed)
+├── common/                # Shared infra — decorators, guards, interceptors, strategies
+├── config/                # App configuration (env-based)
+├── modules/               # Domain modules (appointments, clinic, users, etc.)
+│   └── */                 # Each module: dto/, entities/, controller, module, service
+├── prisma/                # Prisma client adapter + seeding
+├── app.controller.ts
+├── app.module.ts
+└── main.ts
+```
+
 ## Key Configurations
 
 | Concern | File |
@@ -26,6 +46,7 @@ DATABASE_URL="postgresql://user:password@host:port/database?sslmode=require"
 | Prisma client module | `apps/api/src/prisma/prisma.module.ts` |
 | Tailwind CSS (v4) theme | `apps/web/src/index.css` — `@theme` block with DESIGN.md tokens |
 | Design tokens source of truth | `DESIGN.md` — Material 3 tokens, typography, spacing, radii |
+| Swagger docs | `GET /api/docs` |
 
 ## Prisma 7
 
