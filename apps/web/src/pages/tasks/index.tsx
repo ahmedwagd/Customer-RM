@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Button, DataTable, Modal, Input, FAB, Pagination, Spinner } from '../../components/ui'
+import { Button, DataTable, Modal, Input, FAB, Pagination, TableSkeleton } from '../../components/ui'
 import type { Column } from '../../components/ui'
 import { listTasks, createTask, updateTask, deleteTask } from '../../api/tasks'
 import type { Task } from '../../api/types'
+import { useToast } from '../../hooks/useToast'
 
 export default function TasksPage() {
+  const { toast } = useToast()
   const [data, setData] = useState({ data: [] as Task[], total: 0, page: 1, limit: 10, totalPages: 0 })
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
@@ -20,9 +22,9 @@ export default function TasksPage() {
     let cancelled = false
     listTasks({ page, limit, sortBy: 'createdAt', sortOrder: 'desc', completed: showCompleted || undefined })
       .then((res) => { if (!cancelled) { setData(res); setLoading(false) } })
-      .catch(() => { if (!cancelled) setLoading(false) })
+      .catch(() => { if (!cancelled) { setLoading(false); toast('Failed to load tasks', 'error') } })
     return () => { cancelled = true }
-  }, [page, limit, showCompleted])
+  }, [page, limit, showCompleted, toast])
 
   const refresh = () => listTasks({ page, limit, sortBy: 'createdAt', sortOrder: 'desc', completed: showCompleted || undefined })
     .then(setData).catch(() => {})
@@ -42,20 +44,21 @@ export default function TasksPage() {
     try {
       if (editingTask) {
         await updateTask(editingTask.id, { title: form.title, description: form.description || undefined, dueDate: form.dueDate || undefined })
+        toast('Task updated', 'success')
       } else {
         await createTask({ title: form.title, description: form.description || undefined, dueDate: form.dueDate || undefined })
+        toast('Task created', 'success')
       }
       setModalOpen(false); refresh()
-    } catch { setError('Failed to save task') } finally { setSubmitting(false) }
+    } catch { setError('Failed to save task'); toast('Failed to save task', 'error') } finally { setSubmitting(false) }
   }
 
   const toggleComplete = async (task: Task) => {
-    try { await updateTask(task.id, { completed: !task.completed }); refresh() } catch { /* silent */ }
+    try { await updateTask(task.id, { completed: !task.completed }); refresh() } catch { toast('Failed to update task', 'error') }
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this task?')) return
-    try { await deleteTask(id); refresh() } catch { /* silent */ }
+    try { await deleteTask(id); toast('Task deleted', 'success'); refresh() } catch { toast('Failed to delete task', 'error') }
   }
 
   const columns: Column<Task>[] = [
@@ -87,7 +90,7 @@ export default function TasksPage() {
         </label>
       </div>
 
-      {loading ? <Spinner size="md" /> : (
+      {loading ? <TableSkeleton rows={8} cols={3} /> : (
         <>
           <DataTable columns={columns} data={data.data} keyExtractor={(r) => r.id} emptyMessage="No tasks found" />
           <Pagination page={data.page} totalPages={data.totalPages} total={data.total} limit={data.limit} onPageChange={setPage} onLimitChange={setLimit} />

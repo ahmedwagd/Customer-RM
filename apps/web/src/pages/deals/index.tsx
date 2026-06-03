@@ -1,23 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { DataTable, FAB, Spinner, Chip } from '../../components/ui'
+import { DataTable, FAB, Skeleton, Chip } from '../../components/ui'
 import type { Column } from '../../components/ui'
 import { listDeals, updateDeal } from '../../api/deals'
 import type { Deal, DealStage } from '../../api/types'
-import { DealStage as DS } from '../../api/types'
-
-const stageOrder: DealStage[] = [DS.NEW, DS.QUALIFIED, DS.PROPOSAL, DS.NEGOTIATION, DS.CLOSED_WON, DS.CLOSED_LOST]
-const stageLabels: Record<string, string> = {
-  NEW: 'New', QUALIFIED: 'Qualified', PROPOSAL: 'Proposal',
-  NEGOTIATION: 'Negotiation', CLOSED_WON: 'Closed Won', CLOSED_LOST: 'Closed Lost',
-}
-const stageColors: Record<string, string> = {
-  NEW: 'primary', QUALIFIED: 'secondary', PROPOSAL: 'primary',
-  NEGOTIATION: 'secondary', CLOSED_WON: 'tertiary', CLOSED_LOST: 'error',
-}
+import { dealStageLabels, dealStageColors, dealStageOrder } from '../../api/types'
+import { useToast } from '../../hooks/useToast'
 
 export default function DealsPage() {
   const navigate = useNavigate()
+  const { toast } = useToast()
   const [deals, setDeals] = useState<Deal[]>([])
   const [loading, setLoading] = useState(true)
   const [view, setView] = useState<'pipeline' | 'table'>('pipeline')
@@ -26,9 +18,9 @@ export default function DealsPage() {
     let cancelled = false
     listDeals({ limit: 100 }).then((res) => {
       if (!cancelled) { setDeals(res.data); setLoading(false) }
-    }).catch(() => { if (!cancelled) setLoading(false) })
+    }).catch(() => { if (!cancelled) { setLoading(false); toast('Failed to load deals', 'error') } })
     return () => { cancelled = true }
-  }, [])
+  }, [toast])
 
   const refresh = () => {
     listDeals({ limit: 100 }).then((res) => setDeals(res.data)).catch(() => {})
@@ -42,19 +34,39 @@ export default function DealsPage() {
     e.preventDefault()
     const dealId = e.dataTransfer.getData('dealId')
     if (!dealId) return
-    try { await updateDeal(dealId, { stage }); refresh() } catch { /* silent */ }
+    try { await updateDeal(dealId, { stage }); toast('Deal stage updated', 'success'); refresh() } catch { toast('Failed to update deal', 'error') }
   }
 
   const columns: Column<Deal>[] = [
     { key: 'title', header: 'Title', render: (r) => <span className="font-medium">{r.title}</span> },
     { key: 'value', header: 'Value', render: (r) => r.value ? `${r.currency ?? 'USD'} ${r.value.toLocaleString()}` : '—' },
-    { key: 'stage', header: 'Stage', render: (r) => <Chip color={stageColors[r.stage] ?? 'neutral'}>{stageLabels[r.stage] ?? r.stage}</Chip> },
+    { key: 'stage', header: 'Stage', render: (r) => <Chip color={dealStageColors[r.stage] ?? 'neutral'}>{dealStageLabels[r.stage] ?? r.stage}</Chip> },
     { key: 'contactId', header: 'Contact', render: (r) => r.contact ? `${r.contact.firstName} ${r.contact.lastName}` : '—' },
     { key: 'companyId', header: 'Company', render: (r) => r.company?.name ?? '—' },
     { key: 'closeDate', header: 'Close Date', render: (r) => r.closeDate ? new Date(r.closeDate).toLocaleDateString() : '—' },
   ]
 
-  if (loading) return <Spinner size="md" />
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="font-heading text-headline-lg text-on-surface">Deals</h1>
+            <p className="mt-1 text-body-md text-brand-neutral">Manage your deal pipeline</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="flex flex-col gap-3 rounded-lg border border-outline-variant bg-surface-container-low p-3">
+              <Skeleton className="mb-2 h-5 w-1/2" />
+              <Skeleton className="h-16 w-full" />
+              <Skeleton className="h-16 w-full" />
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -73,13 +85,13 @@ export default function DealsPage() {
 
       {view === 'pipeline' ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-          {stageOrder.map((stage) => {
+          {dealStageOrder.map((stage) => {
             const stageDeals = deals.filter((d) => d.stage === stage)
             return (
               <div key={stage} onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleDrop(e, stage)}
                 className="flex flex-col rounded-lg border border-outline-variant bg-surface-container-low p-3">
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-label-sm font-medium text-on-surface">{stageLabels[stage]}</span>
+                  <span className="text-label-sm font-medium text-on-surface">{dealStageLabels[stage]}</span>
                   <span className="rounded-full bg-surface-container-high px-2 py-0.5 text-label-sm text-brand-neutral">{stageDeals.length}</span>
                 </div>
                 <div className="flex flex-col gap-2">

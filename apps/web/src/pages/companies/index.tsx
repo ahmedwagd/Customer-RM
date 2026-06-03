@@ -1,36 +1,41 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { DataTable, SearchBar, Pagination, FAB, Spinner } from '../../components/ui'
+import { DataTable, SearchBar, Pagination, FAB, TableSkeleton } from '../../components/ui'
 import type { Column } from '../../components/ui'
 import { listCompanies, deleteCompany } from '../../api/companies'
 import type { Company } from '../../api/types'
+import { useToast } from '../../hooks/useToast'
+import { useDebounce } from '../../hooks/useDebounce'
 
 export default function CompaniesPage() {
   const navigate = useNavigate()
+  const { toast } = useToast()
   const [data, setData] = useState({ data: [] as Company[], total: 0, page: 1, limit: 10, totalPages: 0 })
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const debouncedSearch = useDebounce(search)
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
 
   useEffect(() => {
     let cancelled = false
+    setLoading(true)
     listCompanies({
       page, limit, sortBy: 'createdAt', sortOrder: 'desc',
-      search: search || undefined,
+      search: debouncedSearch || undefined,
     }).then((res) => {
       if (!cancelled) { setData(res); setLoading(false) }
-    }).catch(() => { if (!cancelled) setLoading(false) })
+    }).catch(() => { if (!cancelled) { setLoading(false); toast('Failed to load companies', 'error') } })
     return () => { cancelled = true }
-  }, [page, limit, search])
+  }, [page, limit, debouncedSearch, toast])
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this company?')) return
     try {
       await deleteCompany(id)
-      listCompanies({ page, limit, sortBy: 'createdAt', sortOrder: 'desc', search: search || undefined })
+      toast('Company deleted', 'success')
+      listCompanies({ page, limit, sortBy: 'createdAt', sortOrder: 'desc', search: debouncedSearch || undefined })
         .then(setData).catch(() => {})
-    } catch { /* silent */ }
+    } catch { toast('Failed to delete company', 'error') }
   }
 
   const columns: Column<Company>[] = [
@@ -82,7 +87,7 @@ export default function CompaniesPage() {
       </div>
 
       {loading
-        ? <Spinner size="md" />
+        ? <TableSkeleton rows={8} cols={4} />
         : (
           <>
             <DataTable columns={columns} data={data.data} keyExtractor={(r) => r.id} onRowClick={(r) => navigate(`/companies/${r.id}`)} />

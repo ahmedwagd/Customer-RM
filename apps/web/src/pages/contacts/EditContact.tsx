@@ -1,10 +1,11 @@
 import { useState, useEffect, type FormEvent } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Button, Input, Dropdown, Spinner } from '../../components/ui'
+import { Button, Input, Dropdown, Skeleton } from '../../components/ui'
 import { getContact, updateContact } from '../../api/contacts'
 import { listCompanies } from '../../api/companies'
 import type { Company } from '../../api/types'
 import { ContactStatus } from '../../api/types'
+import { useToast } from '../../hooks/useToast'
 
 const statusOptions = [
   { value: ContactStatus.LEAD, label: 'Lead' },
@@ -16,6 +17,7 @@ const statusOptions = [
 export default function EditContact() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { toast } = useToast()
   const [companies, setCompanies] = useState<Company[]>([])
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
@@ -43,8 +45,8 @@ export default function EditContact() {
         description: contact.description ?? '',
       })
       setCompanies(compRes.data)
-    }).catch(() => navigate('/contacts')).finally(() => setLoading(false))
-  }, [id, navigate])
+    }).catch(() => { toast('Failed to load contact', 'error'); navigate('/contacts') }).finally(() => setLoading(false))
+  }, [id, navigate, toast])
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -62,15 +64,31 @@ export default function EditContact() {
         source: form.source || undefined,
         description: form.description || undefined,
       })
+      toast('Contact updated', 'success')
       navigate(`/contacts/${id}`)
     } catch {
       setError('Failed to update contact')
+      toast('Failed to update contact', 'error')
     } finally {
       setSubmitting(false)
     }
   }
 
-  if (loading) return <Spinner size="md" />
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-2xl">
+        <div className="mb-6">
+          <Skeleton className="mb-2 h-8 w-48" />
+          <Skeleton className="h-5 w-64" />
+        </div>
+        <div className="space-y-5">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-12 w-full" />
+          ))}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="mx-auto max-w-2xl">

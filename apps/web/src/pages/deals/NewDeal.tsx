@@ -6,6 +6,7 @@ import { listContacts } from '../../api/contacts'
 import { listCompanies } from '../../api/companies'
 import type { Contact, Company } from '../../api/types'
 import { DealStage } from '../../api/types'
+import { useToast } from '../../hooks/useToast'
 
 const stageOptions = [
   { value: DealStage.NEW, label: 'New' },
@@ -18,6 +19,7 @@ const stageOptions = [
 
 export default function NewDeal() {
   const navigate = useNavigate()
+  const { toast } = useToast()
   const [contacts, setContacts] = useState<Contact[]>([])
   const [companies, setCompanies] = useState<Company[]>([])
   const [submitting, setSubmitting] = useState(false)
@@ -52,9 +54,11 @@ export default function NewDeal() {
         companyId: form.companyId || undefined,
         description: form.description || undefined,
       })
+      toast('Deal created', 'success')
       navigate('/deals')
     } catch {
       setError('Failed to create deal')
+      toast('Failed to create deal', 'error')
     } finally {
       setSubmitting(false)
     }

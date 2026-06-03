@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
-import { Button, Modal, Input, Spinner } from '../../components/ui'
+import { Button, Modal, Input, Skeleton } from '../../components/ui'
 import { listTags, createTag, updateTag, deleteTag } from '../../api/tags'
 import type { Tag } from '../../api/types'
+import { useToast } from '../../hooks/useToast'
 
 const presetColors = ['#1a73e8', '#4285f4', '#34a853', '#ea4335', '#fbbc04', '#ff6d01', '#46bdc6', '#ab47bc', '#7c4dff', '#5f6368']
 
 export default function TagsPage() {
+  const { toast } = useToast()
   const [tags, setTags] = useState<Tag[]>([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
@@ -19,9 +21,9 @@ export default function TagsPage() {
     let cancelled = false
     listTags().then((data) => {
       if (!cancelled) { setTags(data); setLoading(false) }
-    }).catch(() => { if (!cancelled) setLoading(false) })
+    }).catch(() => { if (!cancelled) { setLoading(false); toast('Failed to load tags', 'error') } })
     return () => { cancelled = true }
-  }, [])
+  }, [toast])
 
   const refresh = () => listTags().then(setTags).catch(() => {})
 
@@ -32,15 +34,14 @@ export default function TagsPage() {
     if (!name.trim()) return
     setError(''); setSubmitting(true)
     try {
-      if (editingTag) { await updateTag(editingTag.id, { name: name.trim(), color }) }
-      else { await createTag({ name: name.trim(), color }) }
+      if (editingTag) { await updateTag(editingTag.id, { name: name.trim(), color }); toast('Tag updated', 'success') }
+      else { await createTag({ name: name.trim(), color }); toast('Tag created', 'success') }
       setModalOpen(false); refresh()
-    } catch { setError('Failed to save tag') } finally { setSubmitting(false) }
+    } catch { setError('Failed to save tag'); toast('Failed to save tag', 'error') } finally { setSubmitting(false) }
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this tag? It will be removed from all associated entities.')) return
-    try { await deleteTag(id); refresh() } catch { /* silent */ }
+    try { await deleteTag(id); toast('Tag deleted', 'success'); refresh() } catch { toast('Failed to delete tag', 'error') }
   }
 
   const usageCount = (tag: Tag) => {
@@ -58,7 +59,19 @@ export default function TagsPage() {
         <Button onClick={openCreate}>New Tag</Button>
       </div>
 
-      {loading ? <Spinner size="md" /> : tags.length === 0
+      {loading ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-3 rounded-lg border border-outline-variant bg-surface-container-lowest p-4 shadow-sm">
+              <Skeleton variant="circular" width={16} height={16} />
+              <div className="flex-1">
+                <Skeleton className="mb-1 h-4 w-1/3" />
+                <Skeleton className="h-3 w-1/4" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : tags.length === 0
         ? <p className="text-body-md text-brand-neutral">No tags yet. Create your first tag.</p>
         : <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {tags.map((tag) => (

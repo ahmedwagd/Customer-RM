@@ -2,9 +2,11 @@ import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button, Input } from '../../components/ui'
 import { createCompany } from '../../api/companies'
+import { useToast } from '../../hooks/useToast'
 
 export default function NewCompany() {
   const navigate = useNavigate()
+  const { toast } = useToast()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [form, setForm] = useState({ name: '', domain: '', notes: '' })
@@ -19,9 +21,11 @@ export default function NewCompany() {
         domain: form.domain || undefined,
         notes: form.notes || undefined,
       })
+      toast('Company created', 'success')
       navigate('/companies')
     } catch {
       setError('Failed to create company')
+      toast('Failed to create company', 'error')
     } finally {
       setSubmitting(false)
     }

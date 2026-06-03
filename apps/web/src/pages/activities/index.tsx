@@ -1,17 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Dropdown, Spinner } from '../../components/ui'
+import { Dropdown, Skeleton } from '../../components/ui'
 import { listActivities } from '../../api/activities'
 import type { Activity } from '../../api/types'
-import { ActivityType as AT } from '../../api/types'
-
-const typeLabels: Record<string, string> = { EMAIL: 'Email', CALL: 'Call', MEETING: 'Meeting', SYSTEM: 'System' }
-const typeIcons: Record<string, string> = { EMAIL: '✉', CALL: '📞', MEETING: '📅', SYSTEM: '⚙' }
-const typeColors: Record<string, string> = {
-  EMAIL: 'border-l-brand-primary', CALL: 'border-l-brand-secondary',
-  MEETING: 'border-l-brand-tertiary', SYSTEM: 'border-l-outline',
-}
+import { ActivityType as AT, activityTypeLabels, activityTypeIcons, activityTypeColors } from '../../api/types'
+import { useToast } from '../../hooks/useToast'
 
 export default function ActivitiesPage() {
+  const { toast } = useToast()
   const [activities, setActivities] = useState<Activity[]>([])
   const [loading, setLoading] = useState(true)
   const [typeFilter, setTypeFilter] = useState('')
@@ -25,9 +20,9 @@ export default function ActivitiesPage() {
           setLoading(false)
         }
       })
-      .catch(() => { if (!cancelled) setLoading(false) })
+      .catch(() => { if (!cancelled) { setLoading(false); toast('Failed to load activities', 'error') } })
     return () => { cancelled = true }
-  }, [typeFilter])
+  }, [typeFilter, toast])
 
   const grouped = activities.reduce<Record<string, Activity[]>>((acc, a) => {
     const dateKey = new Date(a.occurredAt).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })
@@ -47,19 +42,29 @@ export default function ActivitiesPage() {
           options={[{ value: '', label: 'All types' }, { value: AT.EMAIL, label: 'Email' }, { value: AT.CALL, label: 'Call' }, { value: AT.MEETING, label: 'Meeting' }, { value: AT.SYSTEM, label: 'System' }]} />
       </div>
 
-      {loading ? <Spinner size="md" /> : Object.keys(grouped).length === 0
+      {loading ? (
+        <div className="flex flex-col gap-4">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="rounded-lg border border-outline-variant border-l-4 border-l-outline bg-surface-container-lowest p-4 shadow-sm">
+              <Skeleton className="mb-2 h-4 w-1/4" />
+              <Skeleton className="mb-1 h-5 w-2/3" />
+              <Skeleton className="h-4 w-1/2" />
+            </div>
+          ))}
+        </div>
+      ) : Object.keys(grouped).length === 0
         ? <p className="text-body-md text-brand-neutral">No activities found</p>
         : Object.entries(grouped).map(([date, items]) => (
             <div key={date}>
               <h3 className="mb-3 font-heading text-title-md text-on-surface">{date}</h3>
               <div className="flex flex-col gap-3">
                 {items.map((a) => (
-                  <div key={a.id} className={`rounded-lg border border-outline-variant border-l-4 bg-surface-container-lowest p-4 shadow-sm ${typeColors[a.type] ?? 'border-l-outline'}`}>
+                  <div key={a.id} className={`rounded-lg border border-outline-variant border-l-4 bg-surface-container-lowest p-4 shadow-sm ${activityTypeColors[a.type] ?? 'border-l-outline'}`}>
                     <div className="flex items-start gap-3">
-                      <span className="text-xl">{typeIcons[a.type] ?? '•'}</span>
+                      <span className="text-xl">{activityTypeIcons[a.type] ?? '•'}</span>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-label-sm font-medium text-on-surface">{typeLabels[a.type] ?? a.type}</span>
+                          <span className="text-label-sm font-medium text-on-surface">{activityTypeLabels[a.type] ?? a.type}</span>
                           <span className="text-label-sm text-brand-neutral">
                             {new Date(a.occurredAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
                           </span>

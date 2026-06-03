@@ -1,36 +1,60 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Button, Card, Chip, Spinner } from '../../components/ui'
+import { Button, Card, Chip, Skeleton } from '../../components/ui'
 import { getContact, deleteContact } from '../../api/contacts'
 import type { Contact } from '../../api/types'
-
-const statusColors: Record<string, string> = {
-  LEAD: 'primary',
-  ACTIVE: 'tertiary',
-  INACTIVE: 'neutral',
-  LOST: 'error',
-}
+import { contactStatusColors } from '../../api/types'
+import { useToast } from '../../hooks/useToast'
 
 export default function ContactDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { toast } = useToast()
   const [contact, setContact] = useState<Contact | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (!id) return
-    getContact(id).then(setContact).catch(() => navigate('/contacts')).finally(() => setLoading(false))
-  }, [id, navigate])
+    getContact(id).then(setContact).catch(() => { toast('Contact not found', 'error'); navigate('/contacts') }).finally(() => setLoading(false))
+  }, [id, navigate, toast])
 
   const handleDelete = async () => {
-    if (!id || !confirm('Delete this contact?')) return
+    if (!id) return
     try {
       await deleteContact(id)
+      toast('Contact deleted', 'success')
       navigate('/contacts')
-    } catch { /* silent */ }
+    } catch { toast('Failed to delete contact', 'error') }
   }
 
-  if (loading) return <Spinner size="md" />
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="flex items-start justify-between">
+          <div>
+            <Skeleton className="mb-2 h-8 w-64" />
+            <Skeleton className="h-5 w-40" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="flex flex-col gap-6 lg:col-span-1">
+            <div className="rounded-lg border border-outline-variant bg-surface-container-lowest p-6 shadow-card">
+              {Array.from({ length: 7 }).map((_, i) => (
+                <Skeleton key={i} className="mb-3 h-4 w-full" />
+              ))}
+            </div>
+          </div>
+          <div className="flex flex-col gap-6 lg:col-span-2">
+            <div className="rounded-lg border border-outline-variant bg-surface-container-lowest p-6 shadow-card">
+              <Skeleton className="mb-3 h-5 w-1/4" />
+              <Skeleton className="h-20 w-full" />
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (!contact) return <p className="text-body-md text-brand-neutral">Contact not found</p>
 
   return (
@@ -70,7 +94,7 @@ export default function ContactDetail() {
               <div>
                 <dt className="text-label-sm text-brand-neutral">Status</dt>
                 <dd>
-                  <Chip color={statusColors[contact.status] ?? 'neutral'}>{contact.status}</Chip>
+                  <Chip color={contactStatusColors[contact.status] ?? 'neutral'}>{contact.status}</Chip>
                 </dd>
               </div>
               <div>

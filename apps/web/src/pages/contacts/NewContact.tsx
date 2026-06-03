@@ -5,6 +5,7 @@ import { createContact } from '../../api/contacts'
 import { listCompanies } from '../../api/companies'
 import type { Company } from '../../api/types'
 import { ContactStatus } from '../../api/types'
+import { useToast } from '../../hooks/useToast'
 
 const statusOptions = [
   { value: ContactStatus.LEAD, label: 'Lead' },
@@ -15,6 +16,7 @@ const statusOptions = [
 
 export default function NewContact() {
   const navigate = useNavigate()
+  const { toast } = useToast()
   const [companies, setCompanies] = useState<Company[]>([])
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -43,9 +45,11 @@ export default function NewContact() {
         source: form.source || undefined,
         description: form.description || undefined,
       })
+      toast('Contact created', 'success')
       navigate('/contacts')
     } catch {
       setError('Failed to create contact')
+      toast('Failed to create contact', 'error')
     } finally {
       setSubmitting(false)
     }

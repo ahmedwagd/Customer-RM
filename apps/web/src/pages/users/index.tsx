@@ -1,40 +1,41 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../hooks/useAuth'
-import { DataTable, SearchBar, Chip, Pagination, Spinner } from '../../components/ui'
+import { DataTable, SearchBar, Chip, Pagination, TableSkeleton } from '../../components/ui'
 import type { Column } from '../../components/ui'
 import { listUsers, updateUser, deleteUser } from '../../api/users'
 import type { User } from '../../api/types'
-import { UserRole } from '../../api/types'
-
-const roleLabels: Record<string, string> = { ADMIN: 'Admin', MANAGER: 'Manager', MEMBER: 'Member' }
-const roleColors: Record<string, string> = { ADMIN: 'error', MANAGER: 'primary', MEMBER: 'neutral' }
+import { UserRole, userRoleLabels, userRoleColors } from '../../api/types'
+import { useToast } from '../../hooks/useToast'
+import { useDebounce } from '../../hooks/useDebounce'
 
 export default function UsersPage() {
   const { user: currentUser } = useAuth()
+  const { toast } = useToast()
   const [data, setData] = useState({ data: [] as User[], total: 0, page: 1, limit: 10, totalPages: 0 })
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const debouncedSearch = useDebounce(search)
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
 
   useEffect(() => {
     let cancelled = false
-    listUsers({ page, limit, sortBy: 'createdAt', sortOrder: 'desc', search: search || undefined })
+    setLoading(true)
+    listUsers({ page, limit, sortBy: 'createdAt', sortOrder: 'desc', search: debouncedSearch || undefined })
       .then((res) => { if (!cancelled) { setData(res); setLoading(false) } })
-      .catch(() => { if (!cancelled) setLoading(false) })
+      .catch(() => { if (!cancelled) { setLoading(false); toast('Failed to load users', 'error') } })
     return () => { cancelled = true }
-  }, [page, limit, search])
+  }, [page, limit, debouncedSearch, toast])
 
-  const refresh = () => listUsers({ page, limit, sortBy: 'createdAt', sortOrder: 'desc', search: search || undefined }).then(setData).catch(() => {})
+  const refresh = () => listUsers({ page, limit, sortBy: 'createdAt', sortOrder: 'desc', search: debouncedSearch || undefined }).then(setData).catch(() => {})
 
   const toggleRole = async (targetUser: User) => {
     const nextRole = targetUser.role === UserRole.ADMIN ? UserRole.MANAGER : targetUser.role === UserRole.MANAGER ? UserRole.MEMBER : UserRole.MANAGER
-    try { await updateUser(targetUser.id, { role: nextRole }); refresh() } catch { /* silent */ }
+    try { await updateUser(targetUser.id, { role: nextRole }); toast('User role updated', 'success'); refresh() } catch { toast('Failed to update role', 'error') }
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this user?')) return
-    try { await deleteUser(id); refresh() } catch { /* silent */ }
+    try { await deleteUser(id); toast('User removed', 'success'); refresh() } catch { toast('Failed to remove user', 'error') }
   }
 
   const isAdmin = currentUser?.role === UserRole.ADMIN
@@ -49,7 +50,7 @@ export default function UsersPage() {
     { key: 'email', header: 'Email' },
     { key: 'role', header: 'Role', render: (r) => (
       <button type="button" disabled={!isAdmin} onClick={(e) => { e.stopPropagation(); toggleRole(r) }} className="disabled:cursor-default" title={isAdmin ? 'Click to toggle role' : ''}>
-        <Chip color={roleColors[r.role] ?? 'neutral'}>{roleLabels[r.role] ?? r.role}</Chip>
+        <Chip color={userRoleColors[r.role] ?? 'neutral'}>{userRoleLabels[r.role] ?? r.role}</Chip>
       </button>
     )},
     { key: 'createdAt', header: 'Joined', render: (r) => new Date(r.createdAt).toLocaleDateString() },
@@ -73,7 +74,7 @@ export default function UsersPage() {
         <SearchBar value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} placeholder="Search users..." />
       </div>
 
-      {loading ? <Spinner size="md" /> : (
+      {loading ? <TableSkeleton rows={8} cols={4} /> : (
         <>
           <DataTable columns={columns} data={data.data} keyExtractor={(r) => r.id} />
           <Pagination page={data.page} totalPages={data.totalPages} total={data.total} limit={data.limit} onPageChange={setPage} onLimitChange={setLimit} />

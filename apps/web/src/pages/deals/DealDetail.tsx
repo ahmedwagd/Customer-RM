@@ -1,52 +1,72 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Button, Card, Chip, Spinner } from '../../components/ui'
+import { Button, Card, Chip, Skeleton } from '../../components/ui'
 import { getDeal, deleteDeal, updateDeal } from '../../api/deals'
-import type { Deal, DealStage } from '../../api/types'
-import { DealStage as DS } from '../../api/types'
-
-const stageLabels: Record<string, string> = {
-  NEW: 'New', QUALIFIED: 'Qualified', PROPOSAL: 'Proposal',
-  NEGOTIATION: 'Negotiation', CLOSED_WON: 'Closed Won', CLOSED_LOST: 'Closed Lost',
-}
-const stageColors: Record<string, string> = {
-  NEW: 'primary', QUALIFIED: 'secondary', PROPOSAL: 'primary',
-  NEGOTIATION: 'secondary', CLOSED_WON: 'tertiary', CLOSED_LOST: 'error',
-}
-const stageOrder: DealStage[] = [DS.NEW, DS.QUALIFIED, DS.PROPOSAL, DS.NEGOTIATION, DS.CLOSED_WON, DS.CLOSED_LOST]
+import type { Deal } from '../../api/types'
+import { dealStageLabels, dealStageColors, dealStageOrder } from '../../api/types'
+import { useToast } from '../../hooks/useToast'
 
 export default function DealDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { toast } = useToast()
   const [deal, setDeal] = useState<Deal | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (!id) return
-    getDeal(id).then(setDeal).catch(() => navigate('/deals')).finally(() => setLoading(false))
-  }, [id, navigate])
+    getDeal(id).then(setDeal).catch(() => { toast('Deal not found', 'error'); navigate('/deals') }).finally(() => setLoading(false))
+  }, [id, navigate, toast])
 
   const handleDelete = async () => {
-    if (!id || !confirm('Delete this deal?')) return
-    try { await deleteDeal(id); navigate('/deals') } catch { /* silent */ }
+    if (!id) return
+    try { await deleteDeal(id); toast('Deal deleted', 'success'); navigate('/deals') } catch { toast('Failed to delete deal', 'error') }
   }
 
   const advanceStage = async () => {
     if (!deal || !id) return
-    const idx = stageOrder.indexOf(deal.stage)
-    if (idx < 0 || idx >= stageOrder.length - 1) return
-    const nextStage = stageOrder[idx + 1]
+    const idx = dealStageOrder.indexOf(deal.stage)
+    if (idx < 0 || idx >= dealStageOrder.length - 1) return
+    const nextStage = dealStageOrder[idx + 1]
     try {
       const updated = await updateDeal(id, { stage: nextStage })
       setDeal(updated)
-    } catch { /* silent */ }
+      toast('Deal stage advanced', 'success')
+    } catch { toast('Failed to advance deal', 'error') }
   }
 
-  if (loading) return <Spinner size="md" />
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="flex items-start justify-between">
+          <div>
+            <Skeleton className="mb-2 h-8 w-64" />
+            <Skeleton className="h-5 w-32" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="flex flex-col gap-6 lg:col-span-1">
+            <div className="rounded-lg border border-outline-variant bg-surface-container-lowest p-6 shadow-card">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Skeleton key={i} className="mb-3 h-4 w-full" />
+              ))}
+            </div>
+          </div>
+          <div className="flex flex-col gap-6 lg:col-span-2">
+            <div className="rounded-lg border border-outline-variant bg-surface-container-lowest p-6 shadow-card">
+              <Skeleton className="mb-3 h-5 w-1/4" />
+              <Skeleton className="h-16 w-full" />
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (!deal) return <p className="text-body-md text-brand-neutral">Deal not found</p>
 
-  const currentIdx = stageOrder.indexOf(deal.stage)
-  const canAdvance = currentIdx >= 0 && currentIdx < stageOrder.length - 1
+  const currentIdx = dealStageOrder.indexOf(deal.stage)
+  const canAdvance = currentIdx >= 0 && currentIdx < dealStageOrder.length - 1
 
   return (
     <div className="flex flex-col gap-6">
@@ -54,13 +74,13 @@ export default function DealDetail() {
         <div>
           <h1 className="font-heading text-headline-lg text-on-surface">{deal.title}</h1>
           <p className="mt-1 text-body-md text-brand-neutral">
-            <Chip color={stageColors[deal.stage] ?? 'neutral'}>{stageLabels[deal.stage] ?? deal.stage}</Chip>
+            <Chip color={dealStageColors[deal.stage] ?? 'neutral'}>{dealStageLabels[deal.stage] ?? deal.stage}</Chip>
           </p>
         </div>
         <div className="flex gap-2">
           {canAdvance && (
             <Button variant="primary" onClick={advanceStage}>
-              Advance to {stageLabels[stageOrder[currentIdx + 1]]}
+              Advance to {dealStageLabels[dealStageOrder[currentIdx + 1]]}
             </Button>
           )}
           <Button variant="danger" onClick={handleDelete}>Delete</Button>
@@ -80,7 +100,7 @@ export default function DealDetail() {
               </div>
               <div>
                 <dt className="text-label-sm text-brand-neutral">Stage</dt>
-                <dd className="text-body-md text-on-surface">{stageLabels[deal.stage] ?? deal.stage}</dd>
+                <dd className="text-body-md text-on-surface">{dealStageLabels[deal.stage] ?? deal.stage}</dd>
               </div>
               <div>
                 <dt className="text-label-sm text-brand-neutral">Close Date</dt>

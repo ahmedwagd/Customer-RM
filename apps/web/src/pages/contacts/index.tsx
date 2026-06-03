@@ -1,54 +1,47 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { DataTable, SearchBar, Dropdown, Pagination, FAB, Chip, Spinner } from '../../components/ui'
+import { DataTable, SearchBar, Dropdown, Pagination, FAB, Chip, TableSkeleton } from '../../components/ui'
 import type { Column } from '../../components/ui'
 import { listContacts, deleteContact } from '../../api/contacts'
 import type { Contact, ContactStatus } from '../../api/types'
-
-const statusLabels: Record<string, string> = {
-  LEAD: 'Lead',
-  ACTIVE: 'Active',
-  INACTIVE: 'Inactive',
-  LOST: 'Lost',
-}
-const statusColors: Record<string, string> = {
-  LEAD: 'primary',
-  ACTIVE: 'tertiary',
-  INACTIVE: 'neutral',
-  LOST: 'error',
-}
+import { contactStatusLabels, contactStatusColors } from '../../api/types'
+import { useToast } from '../../hooks/useToast'
+import { useDebounce } from '../../hooks/useDebounce'
 
 export default function ContactsPage() {
   const navigate = useNavigate()
+  const { toast } = useToast()
   const [data, setData] = useState({ data: [] as Contact[], total: 0, page: 1, limit: 10, totalPages: 0 })
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const debouncedSearch = useDebounce(search)
   const [statusFilter, setStatusFilter] = useState('')
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
 
   useEffect(() => {
     let cancelled = false
+    setLoading(true)
     listContacts({
       page, limit, sortBy: 'createdAt', sortOrder: 'desc',
-      search: search || undefined,
+      search: debouncedSearch || undefined,
       status: (statusFilter || undefined) as ContactStatus | undefined,
     }).then((res) => {
       if (!cancelled) { setData(res); setLoading(false) }
-    }).catch(() => { if (!cancelled) setLoading(false) })
+    }).catch(() => { if (!cancelled) { setLoading(false); toast('Failed to load contacts', 'error') } })
     return () => { cancelled = true }
-  }, [page, limit, search, statusFilter])
+  }, [page, limit, debouncedSearch, statusFilter, toast])
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this contact?')) return
     try {
       await deleteContact(id)
+      toast('Contact deleted', 'success')
       listContacts({
         page, limit, sortBy: 'createdAt', sortOrder: 'desc',
-        search: search || undefined,
+        search: debouncedSearch || undefined,
         status: (statusFilter || undefined) as ContactStatus | undefined,
       }).then(setData).catch(() => {})
-    } catch { /* silent */ }
+    } catch { toast('Failed to delete contact', 'error') }
   }
 
   const columns: Column<Contact>[] = [
@@ -69,8 +62,8 @@ export default function ContactsPage() {
       key: 'status',
       header: 'Status',
       render: (row) => (
-        <Chip color={statusColors[row.status] ?? 'neutral'}>
-          {statusLabels[row.status] ?? row.status}
+        <Chip color={contactStatusColors[row.status] ?? 'neutral'}>
+          {contactStatusLabels[row.status] ?? row.status}
         </Chip>
       ),
     },
@@ -123,13 +116,13 @@ export default function ContactsPage() {
           onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
           options={[
             { value: '', label: 'All statuses' },
-            ...Object.entries(statusLabels).map(([value, label]) => ({ value, label })),
+            ...Object.entries(contactStatusLabels).map(([value, label]) => ({ value, label })),
           ]}
         />
       </div>
 
       {loading
-        ? <Spinner size="md" />
+        ? <TableSkeleton rows={8} cols={5} />
         : (
           <>
             <DataTable

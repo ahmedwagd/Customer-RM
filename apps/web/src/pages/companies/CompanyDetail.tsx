@@ -1,26 +1,55 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Button, Card, Spinner } from '../../components/ui'
+import { Button, Card, Skeleton } from '../../components/ui'
 import { getCompany, deleteCompany } from '../../api/companies'
 import type { Company } from '../../api/types'
+import { useToast } from '../../hooks/useToast'
 
 export default function CompanyDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const { toast } = useToast()
   const [company, setCompany] = useState<Company | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (!id) return
-    getCompany(id).then(setCompany).catch(() => navigate('/companies')).finally(() => setLoading(false))
-  }, [id, navigate])
+    getCompany(id).then(setCompany).catch(() => { toast('Company not found', 'error'); navigate('/companies') }).finally(() => setLoading(false))
+  }, [id, navigate, toast])
 
   const handleDelete = async () => {
-    if (!id || !confirm('Delete this company?')) return
-    try { await deleteCompany(id); navigate('/companies') } catch { /* silent */ }
+    if (!id) return
+    try { await deleteCompany(id); toast('Company deleted', 'success'); navigate('/companies') } catch { toast('Failed to delete company', 'error') }
   }
 
-  if (loading) return <Spinner size="md" />
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="flex items-start justify-between">
+          <div>
+            <Skeleton className="mb-2 h-8 w-64" />
+            <Skeleton className="h-5 w-40" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+          <div className="flex flex-col gap-6 lg:col-span-1">
+            <div className="rounded-lg border border-outline-variant bg-surface-container-lowest p-6 shadow-card">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Skeleton key={i} className="mb-3 h-4 w-full" />
+              ))}
+            </div>
+          </div>
+          <div className="flex flex-col gap-6 lg:col-span-2">
+            <div className="rounded-lg border border-outline-variant bg-surface-container-lowest p-6 shadow-card">
+              <Skeleton className="mb-3 h-5 w-1/4" />
+              <Skeleton className="h-20 w-full" />
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (!company) return <p className="text-body-md text-brand-neutral">Company not found</p>
 
   return (

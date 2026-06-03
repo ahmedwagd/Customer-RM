@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
-import { Button, Card, Modal, FAB, Spinner } from '../../components/ui'
+import { Button, Card, Modal, FAB, CardSkeleton } from '../../components/ui'
 import { listNotes, createNote, updateNote, deleteNote } from '../../api/notes'
 import type { Note } from '../../api/types'
+import { useToast } from '../../hooks/useToast'
 
 export default function NotesPage() {
+  const { toast } = useToast()
   const [notes, setNotes] = useState<Note[]>([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
@@ -19,9 +21,9 @@ export default function NotesPage() {
         setNotes(data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
         setLoading(false)
       }
-    }).catch(() => { if (!cancelled) setLoading(false) })
+    }).catch(() => { if (!cancelled) { setLoading(false); toast('Failed to load notes', 'error') } })
     return () => { cancelled = true }
-  }, [])
+  }, [toast])
 
   const refresh = () => listNotes().then((data) => setNotes(data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))).catch(() => {})
 
@@ -32,15 +34,14 @@ export default function NotesPage() {
     if (!content.trim()) return
     setError(''); setSubmitting(true)
     try {
-      if (editingNote) { await updateNote(editingNote.id, { content: content.trim() }) }
-      else { await createNote({ content: content.trim() }) }
+      if (editingNote) { await updateNote(editingNote.id, { content: content.trim() }); toast('Note updated', 'success') }
+      else { await createNote({ content: content.trim() }); toast('Note created', 'success') }
       setModalOpen(false); refresh()
-    } catch { setError('Failed to save note') } finally { setSubmitting(false) }
+    } catch { setError('Failed to save note'); toast('Failed to save note', 'error') } finally { setSubmitting(false) }
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this note?')) return
-    try { await deleteNote(id); refresh() } catch { /* silent */ }
+    try { await deleteNote(id); toast('Note deleted', 'success'); refresh() } catch { toast('Failed to delete note', 'error') }
   }
 
   return (
@@ -50,7 +51,11 @@ export default function NotesPage() {
         <p className="mt-1 text-body-md text-brand-neutral">Quick notes and observations</p>
       </div>
 
-      {loading ? <Spinner size="md" /> : notes.length === 0
+      {loading ? (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => <CardSkeleton key={i} />)}
+        </div>
+      ) : notes.length === 0
         ? <p className="text-body-md text-brand-neutral">No notes yet. Click + to add one.</p>
         : <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {notes.map((note) => (
