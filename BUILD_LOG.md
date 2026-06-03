@@ -120,3 +120,115 @@
 - Fixed `dotenv` not being loaded — removed manual `import 'dotenv/config'` (handled by `@nestjs/config`)
 - Fixed `ConfigService` production-safety: falls back to dev defaults only in non-production
 - Fixed `PrismaClientExceptionFilter` — replaced fragile inline response type with `import type { Response } from 'express'`
+
+## 13. API Implementation — Phase 2 (Auth Module)
+
+### 13a. Dependencies
+- Installed `@nestjs/jwt`, `@nestjs/passport`, `passport`, `passport-jwt`, `argon2`, `uuid`
+- Approved `argon2` native build scripts
+- Installed `cookie-parser` for HTTP-only refresh token cookie support
+
+### 13b. Schema Changes
+- Added `hashedPassword` field to `User` model (required, `String`)
+- Added `RefreshToken` model: `id`, `token` (unique), `userId`, `expiresAt`, `createdAt`; indexed on `userId`
+- Migration: `add_auth_password_refresh_token`
+
+### 13c. Auth Module
+- Created DTOs: `register.dto.ts` (email, name, password, avatarUrl), `login.dto.ts` (email, password)
+- Created `auth.service.ts` — `register()`, `login()`, `refresh()`, `logout()` methods
+  - Password hashing via `argon2`
+  - Access tokens via `@nestjs/jwt` (signed with `JWT_SECRET`, configurable expiry via `JWT_EXPIRES_IN`)
+  - Refresh tokens via UUID (stored in DB, configurable expiry via `JWT_REFRESH_EXPIRES_IN`)
+  - Token rotation: old refresh token deleted before issuing new pair
+  - Race-safe delete using `deleteMany` (avoids P2025 on concurrent reuse)
+- Created `auth.controller.ts` — `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`
+- Created `auth.module.ts` — wires `PassportModule`, `JwtModule.registerAsync`, `JwtStrategy`
+
+### 13d. JWT Infrastructure
+- Created `src/common/strategies/jwt.strategy.ts` — extracts Bearer token, validates against `JWT_SECRET`, returns user (id, email, name, role, avatarUrl)
+- Created `src/common/guards/jwt-auth.guard.ts` — `@UseGuards(JwtAuthGuard)` guard
+- Created `src/common/decorators/current-user.decorator.ts` — `@CurrentUser()` param decorator with typed `CurrentUserType`
+
+### 13e. HTTP-Only Refresh Token Cookie
+- Installed `cookie-parser` middleware (registered in `main.ts`)
+- Refresh token returned via `Set-Cookie` header instead of response body
+- Cookie config: `httpOnly: true`, `secure: true` in production, `sameSite: 'strict'`, `path: '/auth'`
+- `refresh` endpoint reads token from cookie (not request body)
+- `logout` endpoint clears cookie and invalidates token in DB
+
+### 13f. Code Review Fixes
+- Fixed race condition in `refresh()`: `delete` → `deleteMany` (prevents 500 on concurrent token reuse)
+- Fixed hardcoded 7-day refresh expiry: now reads `JWT_REFRESH_EXPIRES_IN` from config via `parseExpiry` helper (supports `d`/`h`/`m`/`s`)
+- Removed deprecated `@types/uuid` (uuid@14 ships its own types)
+
+## 14. API Implementation — Phase 3 (Domain Modules — CRUD Scaffold)
+
+### 14a. Contacts Module
+- `src/modules/contacts/` — DTOs (create, update, query), controller, service, module
+- `GET /contacts` — paginated, filterable by status, companyId, search (name/email)
+- `GET /contacts/:id` — includes company, deals, tasks, notes, activities, tags
+- `POST /contacts` — create
+- `PATCH /contacts/:id` — update
+- `DELETE /contacts/:id` — delete
+
+### 14b. Companies Module
+- `src/modules/companies/` — same DTO/service/controller/module structure
+- `GET /companies` — paginated, searchable by name
+- `GET /companies/:id` — includes contacts, deals, activities, tags
+- `POST /companies` — create
+- `PATCH /companies/:id` — update
+- `DELETE /companies/:id` — delete
+
+### 14c. Deals Module
+- `src/modules/deals/` — DTOs, service, controller, module
+- `GET /deals` — paginated, filterable by stage, userId, contactId, companyId
+- `GET /deals/:id` — includes contact, company, user, tasks, notes, activities, tags
+- `POST /deals` — create (assigns authenticated user)
+- `PATCH /deals/:id` — update (stage transitions)
+- `DELETE /deals/:id` — delete
+
+### 14d. Tasks Module
+- `src/modules/tasks/` — DTOs, service, controller, module
+- `GET /tasks` — paginated, filterable by completed, userId, contactId, dealId, dueDate
+- `GET /tasks/:id` — get with relations
+- `POST /tasks` — create (assigns authenticated user)
+- `PATCH /tasks/:id` — update (supports completed toggle)
+- `DELETE /tasks/:id` — delete
+
+### 14e. Notes Module
+- `src/modules/notes/` — DTOs, service, controller, module
+- `GET /notes` — list (filterable by contactId, dealId)
+- `POST /notes` — create (assigns authenticated user)
+- `PATCH /notes/:id` — update
+- `DELETE /notes/:id` — delete
+
+### 14f. Activities Module
+- `src/modules/activities/` — DTOs, service, controller, module
+- `GET /activities` — list (filterable by type, contactId, dealId, companyId, dateFrom/dateTo)
+- `POST /activities` — create (assigns authenticated user)
+- `DELETE /activities/:id` — delete
+
+### 14g. Tags Module
+- `src/modules/tags/` — DTOs, service, controller, module
+- `GET /tags` — list all with usage counts
+- `POST /tags` — create (unique name enforcement)
+- `PATCH /tags/:id` — update (conflict-safe rename)
+- `DELETE /tags/:id` — delete
+- `POST /tags/:tagId/contacts/:contactId` — attach
+- `DELETE /tags/:tagId/contacts/:contactId` — detach
+- Same for deals and companies (6 attach/detach endpoints total)
+
+### 14h. Users Module
+- `src/modules/users/` — DTOs, service, controller, module
+- `GET /users` — list (paginated, filterable by role, search)
+- `GET /users/:id` — get by id (excludes hashedPassword)
+- `PATCH /users/:id` — update profile
+- `DELETE /users/:id` — delete
+
+### 14i. AppModule Registration
+- All 8 domain modules imported into `AppModule`
+- Typecheck passes clean
+
+### 14j. Code Review Fixups
+- **Tag catch blocks**: All 6 attach/detach methods now catch only specific Prisma error codes (`P2002` for unique constraint, `P2025` for not found), rethrowing unexpected errors instead of masking them with blanket catches
+- **Redundant existence checks removed**: Eliminated `await this.findOne(id)` calls from all 14 `update()`/`remove()` methods across 7 services — the global `PrismaClientExceptionFilter` already maps Prisma's `P2025` to 404, making the upfront fetch unnecessary
