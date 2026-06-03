@@ -316,3 +316,84 @@
 - **Avatar edge case**: Empty/whitespace name renders `??` instead of blank circle
 - **Event propagation**: Chip remove button calls `e.stopPropagation()` to prevent parent click handlers from firing
 - **Typecheck, lint**: All pass clean
+
+## 17. Web Frontend — Phase 3 (Page Implementation)
+
+### 17a. Route Expansion (`App.tsx`)
+- Added nested routes for all module CRUD operations:
+  - Contacts: `/contacts/new`, `/contacts/:id`, `/contacts/:id/edit`
+  - Companies: `/companies/new`, `/companies/:id`
+  - Deals: `/deals/new`, `/deals/:id`
+- No route changes needed for Tasks/Notes/Activities/Tags/Users (modals suffice)
+
+### 17b. Dashboard (`src/pages/Dashboard.tsx`)
+- Live KPI cards: fetches total contacts, total deals, pending tasks via `useEffect` with `Promise.all`
+- Recent activity feed: latest 10 activities with type icon, subject, timestamp
+- Quick-action buttons: Create Contact, Add Deal, View Tasks
+- Loading state shows `—` for KPI values; empty state shows "No recent activity"
+
+### 17c. Contacts Module (4 files)
+- **List** (`contacts/index.tsx`) — DataTable (name, email, company, status chip, created date), SearchBar, status filter Dropdown, Pagination, FAB, action links (Edit/Delete). Loading via Spinner. Uses `cancelled` flag pattern for cleanup.
+- **Create** (`contacts/NewContact.tsx`) — Form with firstName/lastName (required), email, phone, title, status, company dropdown (fetched from API), source, description. Navigates to list on success.
+- **Detail** (`contacts/ContactDetail.tsx`) — Full card-based layout: details panel (side), tags, description, linked deals, tasks, notes, activity log. Delete with confirmation.
+- **Edit** (`contacts/EditContact.tsx`) — Pre-filled form, fetches contact + companies in parallel. Navigates to detail on save.
+
+### 17d. Companies Module (3 files)
+- **List** (`companies/index.tsx`) — DataTable (name, domain, contact count, created), SearchBar, Pagination, FAB, View/Delete actions.
+- **Create** (`companies/NewCompany.tsx`) — Simple form (name, domain, notes textarea).
+- **Detail** (`companies/CompanyDetail.tsx`) — Card layout with details panel, notes, linked contacts list, deals list, activity log.
+
+### 17e. Deals Module (3 files)
+- **Pipeline** (`deals/index.tsx`) — Dual view toggle (Pipeline/Table). Pipeline uses 6-column Kanban grid per `DealStage` (New → Qualified → Proposal → Negotiation → Closed Won/Lost). Native HTML5 drag-and-drop for stage transitions. Column headers show stage label + deal count. Table view uses DataTable fallback.
+- **Create** (`deals/NewDeal.tsx`) — Form (title, value, currency, stage, closeDate, contact/company dropdowns, description).
+- **Detail** (`deals/DealDetail.tsx`) — Stage indicator with color, "Advance Stage" button (moves to next stage in order), details panel, linked tasks/notes/activity.
+
+### 17f. Tasks Module (`tasks/index.tsx`)
+- DataTable with completion checkbox toggle, title (strikethrough when done), due date
+- "Show completed" toggle filter
+- Create/Edit via Modal with title, description, dueDate fields
+- Pagination support
+
+### 17g. Notes Module (`notes/index.tsx`)
+- Card grid layout sorted by most recent
+- Create/Edit via Modal with content textarea
+- Displays user name + date on each card
+
+### 17h. Activities Module (`activities/index.tsx`)
+- Timeline grouped by date with `border-l-4` colored cards
+- Left-border color per activity type (email=primary, call=secondary, meeting=tertiary, system=outline)
+- Type filter Dropdown
+- Shows subject, details, user/contact/company references, timestamp
+
+### 17i. Tags Module (`tags/index.tsx`)
+- Card list with color dot indicator and usage count
+- "New Tag" Button opens Modal with name + 10-color palette picker
+- Edit/Delete inline actions
+
+### 17j. Users Module (`users/index.tsx`)
+- DataTable with name (with "(you)" indicator), email, role (clickable Chip toggles between ADMIN→MANAGER→MEMBER), joined date
+- Admin-only delete action (hidden for current user)
+- Search + Pagination
+
+### 17k. Code Patterns
+- **Data fetching**: `useEffect` with `cancelled` flag pattern (no `useCallback`/custom hook — avoids React 19 lint rule `react-hooks/set-state-in-effect`)
+- **Loading**: `loading` state starts `true`, only set to `false` in async `.then()`/`.catch()` callbacks (never synchronously in effect body)
+- **Type safety**: Form state typed with explicit generic to avoid literal narrowing from `as const` enums
+- **Consistent API**: All pages use the existing typed API functions from `src/api/`
+- **UI components**: All pages use components from `src/components/ui/` (DataTable, Button, Input, Dropdown, Modal, Card, Chip, FAB, Pagination, SearchBar, Spinner)
+- **Theme tokens**: All styles use Tailwind v4 `@theme` tokens from `index.css` (no raw colors)
+
+## 18. Code Review Fixes — Phase 3 Cleanup
+
+### 18a. Delete doesn't refresh list
+- **Contacts** (`contacts/index.tsx`) — `handleDelete` now re-fetches contact list via `listContacts().then(setData)` after successful delete
+- **Companies** (`companies/index.tsx`) — same pattern with `listCompanies().then(setData)`
+
+### 18b. Dashboard missing `cancelled` flag
+- `Dashboard.tsx` — converted `async/await` block inside `useEffect` to `.then()` chain with `cancelled` flag guard, matching the codebase pattern used by all other list pages
+
+### 18c. Duplicate DataTable key in Companies columns
+- `companies/index.tsx` — changed contacts count column key from `'id'` to `'updatedAt'` to avoid React `Encountered two children with the same key` warning
+
+### 18d. Enum consistency
+- `users/index.tsx` — changed `currentUser?.role === 'ADMIN'` string literal to `currentUser?.role === UserRole.ADMIN` (enum was already imported)
