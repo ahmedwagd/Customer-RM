@@ -5,11 +5,13 @@ import { getDeal, deleteDeal, updateDeal } from '../../api/deals'
 import type { Deal } from '../../api/types'
 import { dealStageLabels, dealStageColors, dealStageOrder } from '../../api/types'
 import { useToast } from '../../hooks/useToast'
+import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
 
 export default function DealDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { toast } = useToast()
+  const { setDynamicLabel } = useBreadcrumb()
   const [deal, setDeal] = useState<Deal | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -17,6 +19,10 @@ export default function DealDetail() {
     if (!id) return
     getDeal(id).then(setDeal).catch(() => { toast('Deal not found', 'error'); navigate('/deals') }).finally(() => setLoading(false))
   }, [id, navigate, toast])
+
+  useEffect(() => {
+    if (deal) setDynamicLabel(deal.title)
+  }, [deal, setDynamicLabel])
 
   const handleDelete = async () => {
     if (!id) return

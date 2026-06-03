@@ -6,6 +6,7 @@ import { listCompanies } from '../../api/companies'
 import type { Company } from '../../api/types'
 import { ContactStatus } from '../../api/types'
 import { useToast } from '../../hooks/useToast'
+import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
 
 const statusOptions = [
   { value: ContactStatus.LEAD, label: 'Lead' },
@@ -18,6 +19,7 @@ export default function EditContact() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { toast } = useToast()
+  const { setDynamicLabel } = useBreadcrumb()
   const [companies, setCompanies] = useState<Company[]>([])
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
@@ -33,6 +35,7 @@ export default function EditContact() {
       getContact(id),
       listCompanies({ limit: 100 }),
     ]).then(([contact, compRes]) => {
+      setDynamicLabel(`${contact.firstName} ${contact.lastName}`)
       setForm({
         firstName: contact.firstName,
         lastName: contact.lastName,
@@ -46,7 +49,7 @@ export default function EditContact() {
       })
       setCompanies(compRes.data)
     }).catch(() => { toast('Failed to load contact', 'error'); navigate('/contacts') }).finally(() => setLoading(false))
-  }, [id, navigate, toast])
+  }, [id, navigate, toast, setDynamicLabel])
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()

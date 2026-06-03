@@ -2,6 +2,13 @@ import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import TopBar from '../components/TopBar'
+import Breadcrumbs from '../components/ui/Breadcrumbs'
+import { BreadcrumbProvider, useBreadcrumb } from '../contexts/BreadcrumbContext'
+
+function BreadcrumbBar() {
+  const { items } = useBreadcrumb()
+  return <Breadcrumbs items={items} />
+}
 
 export default function AppLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -12,7 +19,10 @@ export default function AppLayout() {
       <div className="flex flex-1 flex-col min-w-0">
         <TopBar onMenuToggle={() => setSidebarOpen((prev) => !prev)} />
         <main className="flex-1 overflow-auto bg-surface p-4 md:p-6">
-          <Outlet />
+          <BreadcrumbProvider>
+            <BreadcrumbBar />
+            <Outlet />
+          </BreadcrumbProvider>
         </main>
       </div>
     </div>

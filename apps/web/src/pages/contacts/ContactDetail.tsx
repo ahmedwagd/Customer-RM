@@ -5,11 +5,13 @@ import { getContact, deleteContact } from '../../api/contacts'
 import type { Contact } from '../../api/types'
 import { contactStatusColors } from '../../api/types'
 import { useToast } from '../../hooks/useToast'
+import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
 
 export default function ContactDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { toast } = useToast()
+  const { setDynamicLabel } = useBreadcrumb()
   const [contact, setContact] = useState<Contact | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -17,6 +19,10 @@ export default function ContactDetail() {
     if (!id) return
     getContact(id).then(setContact).catch(() => { toast('Contact not found', 'error'); navigate('/contacts') }).finally(() => setLoading(false))
   }, [id, navigate, toast])
+
+  useEffect(() => {
+    if (contact) setDynamicLabel(`${contact.firstName} ${contact.lastName}`)
+  }, [contact, setDynamicLabel])
 
   const handleDelete = async () => {
     if (!id) return

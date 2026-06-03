@@ -4,11 +4,13 @@ import { Button, Card, Skeleton } from '../../components/ui'
 import { getCompany, deleteCompany } from '../../api/companies'
 import type { Company } from '../../api/types'
 import { useToast } from '../../hooks/useToast'
+import { useBreadcrumb } from '../../contexts/BreadcrumbContext'
 
 export default function CompanyDetail() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { toast } = useToast()
+  const { setDynamicLabel } = useBreadcrumb()
   const [company, setCompany] = useState<Company | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -16,6 +18,10 @@ export default function CompanyDetail() {
     if (!id) return
     getCompany(id).then(setCompany).catch(() => { toast('Company not found', 'error'); navigate('/companies') }).finally(() => setLoading(false))
   }, [id, navigate, toast])
+
+  useEffect(() => {
+    if (company) setDynamicLabel(company.name)
+  }, [company, setDynamicLabel])
 
   const handleDelete = async () => {
     if (!id) return
