@@ -423,3 +423,64 @@
 - Added `dotenv` explicitly to dependencies (was already present)
 - Fixed pool connection leak on error: wrapped seed logic in `try/finally` so `pool.end()` always executes
 - Typecheck and build both pass clean
+
+## 20. Web Frontend — Phase 4 (Polish & Cross-Cutting)
+
+### 20a. Shared Package (`packages/shared/`)
+- Configured `packages/shared/` with `tsconfig.json` and `package.json` (ESM, workspace `"shared": "workspace:*"`)
+- Created `packages/shared/src/types.ts` — all model interfaces, enums (`DealStage`, `UserRole`, `ContactStatus`, `ActivityType`) with `as const` pattern, pagination types
+- Created `packages/shared/src/constants.ts` — shared lookup maps for deal stages (`dealStageLabels`, `dealStageColors`, `dealStageOrder`), contact statuses (`contactStatusLabels`, `contactStatusColors`), activity types (`activityTypeLabels`, `activityTypeIcons`, `activityTypeColors`), and user roles (`userRoleLabels`, `userRoleColors`)
+- Created barrel export `packages/shared/src/index.ts`
+- Updated `apps/web/src/api/types.ts` to re-export from `shared` package
+- Added `"shared": "workspace:*"` to `apps/web/package.json`
+
+### 20b. Toast/Snackbar System
+- Created `src/contexts/ToastContext.ts` — `Toast` interface and `ToastContext` with `toast()`, `dismiss()` methods
+- Created `src/contexts/ToastProvider.tsx` — manages toast state, auto-dismiss after 4s, renders `ToastComponent` in fixed bottom-right container
+- Created `src/components/Toast.tsx` — animated slide-in-right toast with type-specific colors (success=tertiary, error=error-container, info=surface-container-high) and dismiss button
+- Created `src/hooks/useToast.ts` — `useToast()` hook consuming `ToastContext`
+- Added CSS keyframes `slide-in-right` and `slide-in-left` to `src/index.css` as Tailwind v4 `@utility` directives
+- Replaced all silent `catch {}` blocks across 15 page files with `toast()` calls showing success/error feedback
+- Replaced `confirm()` dialogs with toast-driven delete feedback on all CRUD operations
+
+### 20c. Error Boundary
+- Created `src/components/ErrorBoundary.tsx` — class component catching render errors, displays "Something went wrong" fallback with error message and "Try Again" button
+- Wrapped `<App />` in `ErrorBoundary` in `src/main.tsx`
+
+### 20d. Skeleton Loaders (all pages)
+- Replaced `<Spinner size="md" />` with appropriate skeleton layouts across every page:
+
+| Page | Skeleton Type |
+|------|---------------|
+| Contacts list | `TableSkeleton` (8 rows, 5 cols) |
+| Companies list | `TableSkeleton` (8 rows, 4 cols) |
+| Deals pipeline | 6 skeleton column cards with `Skeleton` placeholders |
+| Tasks list | `TableSkeleton` (8 rows, 3 cols) |
+| Notes list | Grid of 6 `CardSkeleton` components |
+| Activities list | 5 skeleton activity cards with `border-l` decoration |
+| Tags list | Grid of 6 skeleton tag cards with color dot + name + count |
+| Users list | `TableSkeleton` (8 rows, 4 cols) |
+| Dashboard | 3 skeleton KPI cards + 5 skeleton activity feed rows |
+| Contact detail | Structured 2-column skeleton layout with 7 detail rows |
+| Company detail | Structured 2-column skeleton layout with 4 detail rows |
+| Deal detail | Structured 2-column skeleton layout with 5 detail rows |
+| Edit contact | 6 skeleton form fields |
+
+### 20e. Debounced Search + useFilters Hook
+- Created `src/hooks/useDebounce.ts` — generic `useDebounce<T>(value, delay)` hook (300ms default)
+- Created `src/hooks/useFilters.ts` — `useFilters()` hook managing `{ search, page, limit, sortBy, sortOrder }` state; `setFilter()` resets to page 1 on filter changes
+- Applied `useDebounce` to search inputs on contacts, companies, and users list pages to avoid excessive API calls
+
+### 20f. Responsive Sidebar
+- **Sidebar** (`src/components/Sidebar.tsx`) — now accepts `open`/`onClose` props; renders as fixed overlay on mobile (`md:hidden` backdrop) with slide-in animation (`-translate-x-full` / `translate-x-0`); static inline on `md:` breakpoint
+- **TopBar** (`src/components/TopBar.tsx`) — accepts `onMenuToggle` prop; renders hamburger SVG button visible only on mobile (`md:hidden`); email hidden on small screens (`hidden sm:inline`)
+- **AppLayout** (`src/layouts/AppLayout.tsx`) — manages `sidebarOpen` state via `useState(false)`; passes toggle to TopBar and open/close to Sidebar
+
+### 20g. Main.tsx Integration
+- Updated `src/main.tsx` — wraps component tree in `ToastProvider` then `ErrorBoundary`:
+  `StrictMode > BrowserRouter > AuthProvider > ToastProvider > ErrorBoundary > App`
+
+### 20h. Build Verification
+- TypeScript: `pnpm --filter=web run typecheck` passes clean
+- Production build: `pnpm --filter=web run build` succeeds (320 KB JS gzipped to 89 KB)
+- All 15 pages updated with skeleton loaders, toast notifications, and shared constants
