@@ -8,7 +8,10 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Health check', description: 'Returns a hello world message' })
+  @ApiOperation({
+    summary: 'Health check',
+    description: 'Returns a hello world message',
+  })
   getHello(): string {
     return this.appService.getHello();
   }
