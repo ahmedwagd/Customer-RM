@@ -232,3 +232,49 @@
 ### 14j. Code Review Fixups
 - **Tag catch blocks**: All 6 attach/detach methods now catch only specific Prisma error codes (`P2002` for unique constraint, `P2025` for not found), rethrowing unexpected errors instead of masking them with blanket catches
 - **Redundant existence checks removed**: Eliminated `await this.findOne(id)` calls from all 14 `update()`/`remove()` methods across 7 services — the global `PrismaClientExceptionFilter` already maps Prisma's `P2025` to 404, making the upfront fetch unnecessary
+
+## 15. Web Frontend — Phase 1 (Core Infrastructure)
+
+### 15a. API Client Layer
+- Created `src/api/client.ts` — fetch wrapper with `credentials: 'include'`, automatic `Authorization: Bearer` header injection, and 401-triggered token refresh via POST `/auth/refresh`
+- Created `src/api/types.ts` — full TypeScript types for all 9 Prisma models + 4 enums (`DealStage`, `UserRole`, `ContactStatus`, `ActivityType`) using `as const` pattern (no runtime enums — `erasableSyntaxOnly` is enabled)
+- Created `src/api/auth.ts` — `login()`, `register()`, `logout()` with `AuthResponse` returning access token
+- Created typed API modules: `contacts.ts`, `companies.ts`, `deals.ts`, `tasks.ts`, `notes.ts`, `activities.ts`, `tags.ts`, `users.ts` — each with CRUD functions, filter/pagination parameter types, and DTO interfaces
+- Barrel export via `src/api/index.ts`
+
+### 15b. Auth & Session Management
+- Created `src/contexts/AuthContext.ts` — exports `AuthContext` and `AuthContextValue` interface
+- Created `src/contexts/AuthProvider.tsx` — React component that:
+  - On mount: calls `/auth/refresh` via `tryRestoreSession()` to restore session from httpOnly cookie
+  - Decodes JWT payload client-side to extract `sub` (user ID), then fetches full user via `GET /users/:id`
+  - Provides `login`, `register`, `logout` callbacks — all throw on failure so forms can surface errors
+  - Uses `AbortSignal` for cleanup on unmount during session restore
+- Created `src/hooks/useAuth.ts` — `useAuth()` hook wrapping `AuthContext`
+- Split across 3 files to satisfy `react-refresh/only-export-components` lint rule
+
+### 15c. Routing & Layout Shell
+- **ProtectedRoute** (`src/components/ProtectedRoute.tsx`) — shows spinner during session restore, redirects to `/login` if unauthenticated
+- **AuthLayout** (`src/layouts/AuthLayout.tsx`) — centered single-column layout for login/register with CRM branding
+- **AppLayout** (`src/layouts/AppLayout.tsx`) — Sidebar + TopBar + `<Outlet />` for authenticated pages
+- **Sidebar** (`src/components/Sidebar.tsx`) — 9 NavLinks (Dashboard, Contacts, Companies, Deals, Tasks, Notes, Activities, Tags, Users) with active-state highlighting per MD3 `primary-fixed` color
+- **TopBar** (`src/components/TopBar.tsx`) — user avatar initials, email display, logout button
+
+### 15d. Route Tree & Page Stubs
+- `App.tsx` — full route tree:
+  - Public: `/` (Home), `/login`, `/register`
+  - Protected (under `ProtectedRoute` + `AppLayout`): `/dashboard`, `/contacts`, `/companies`, `/deals`, `/tasks`, `/notes`, `/activities`, `/tags`, `/users`
+- **Login** (`src/pages/auth/Login.tsx`) — email + password form with error display, link to register
+- **Register** (`src/pages/auth/Register.tsx`) — name + email + password + confirm password form with match validation
+- **Home** — existing landing page
+- **Dashboard** — existing placeholder (will be built in Phase 3)
+- 8 module placeholder pages — each with heading and "coming soon" message
+
+### 15e. Dev Tooling
+- `vite.config.ts` — added Vite dev proxy for 9 API route prefixes (`/auth`, `/contacts`, `/companies`, `/deals`, `/tasks`, `/notes`, `/activities`, `/tags`, `/users`) → `http://localhost:3000`
+
+### 15f. Code Review Fixes (Round 2)
+- **Silent auth failure**: `fetchUserFromToken` now throws on failure instead of returning null; `login()`/`register()` propagate errors to forms; mount path uses try/catch with graceful fallback
+- **Dead field removed**: Removed `user?: User` from `AuthResponse` — the API only returns `{ accessToken }`
+- **File rename**: `src/api/note.ts` → `src/api/notes.ts` for plural consistency
+- **Confirm password**: Added confirm password field with client-side match validation on Register page
+- **Typecheck, lint, build**: All pass clean
