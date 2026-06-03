@@ -20,7 +20,11 @@ export function getAccessToken(): string | null {
   return _accessToken
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+const API_BASE_URL = (() => {
+  const url = import.meta.env.VITE_API_URL || '';
+  if (!url) return '';
+  return url.startsWith('http') ? url : `https://${url}`;
+})();
 
 async function attemptRefresh(): Promise<string | null> {
   if (_refreshPromise) return _refreshPromise
