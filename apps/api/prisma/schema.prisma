@@ -5,3 +5,219 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum DealStage {
+  NEW
+  QUALIFIED
+  PROPOSAL
+  NEGOTIATION
+  CLOSED_WON
+  CLOSED_LOST
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  MEMBER
+}
+
+enum ContactStatus {
+  LEAD
+  ACTIVE
+  INACTIVE
+  LOST
+}
+
+enum ActivityType {
+  EMAIL
+  CALL
+  MEETING
+  SYSTEM
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  avatarUrl String?
+  role      UserRole @default(MEMBER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  contacts   Contact[]
+  deals      Deal[]
+  tasks      Task[]
+  notes      Note[]
+  activities Activity[]
+}
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  domain    String?
+  logoUrl   String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  contacts   Contact[]
+  deals      Deal[]
+  activities Activity[]
+  tags       TagOnCompany[]
+}
+
+model Contact {
+  id          String        @id @default(cuid())
+  firstName   String
+  lastName    String
+  email       String?
+  phone       String?
+  title       String?
+  avatarUrl   String?
+  description String?
+  status      ContactStatus @default(LEAD)
+  source      String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  deals      Deal[]
+  tasks      Task[]
+  notes      Note[]
+  activities Activity[]
+  tags       TagOnContact[]
+
+  @@index([userId])
+  @@index([companyId])
+}
+
+model Deal {
+  id          String    @id @default(cuid())
+  title       String
+  value       Float?
+  currency    String    @default("USD")
+  stage       DealStage @default(NEW)
+  closeDate   DateTime?
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  contactId String?
+  contact   Contact? @relation(fields: [contactId], references: [id])
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  tasks      Task[]
+  notes      Note[]
+  activities Activity[]
+  tags       TagOnDeal[]
+
+  @@index([userId])
+  @@index([contactId])
+  @@index([companyId])
+}
+
+model Task {
+  id          String    @id @default(cuid())
+  title       String
+  description String?
+  dueDate     DateTime?
+  completed   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  contactId String?
+  contact   Contact? @relation(fields: [contactId], references: [id])
+  dealId    String?
+  deal      Deal?    @relation(fields: [dealId], references: [id])
+
+  @@index([userId])
+  @@index([contactId])
+  @@index([dealId])
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  contactId String?
+  contact   Contact? @relation(fields: [contactId], references: [id])
+  dealId    String?
+  deal      Deal?    @relation(fields: [dealId], references: [id])
+
+  @@index([userId])
+  @@index([contactId])
+  @@index([dealId])
+}
+
+model Activity {
+  id         String       @id @default(cuid())
+  type       ActivityType
+  subject    String
+  details    String?
+  occurredAt DateTime     @default(now())
+  createdAt  DateTime     @default(now())
+
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  contactId String?
+  contact   Contact? @relation(fields: [contactId], references: [id])
+  dealId    String?
+  deal      Deal?    @relation(fields: [dealId], references: [id])
+  companyId String?
+  company   Company? @relation(fields: [companyId], references: [id])
+
+  @@index([userId])
+  @@index([contactId])
+  @@index([dealId])
+  @@index([companyId])
+}
+
+model Tag {
+  id    String @id @default(cuid())
+  name  String @unique
+  color String @default("#6366f1")
+
+  contacts  TagOnContact[]
+  deals     TagOnDeal[]
+  companies TagOnCompany[]
+}
+
+model TagOnContact {
+  contactId String
+  tagId     String
+  contact   Contact @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([contactId, tagId])
+}
+
+model TagOnDeal {
+  dealId String
+  tagId  String
+  deal   Deal   @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([dealId, tagId])
+}
+
+model TagOnCompany {
+  companyId String
+  tagId     String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([companyId, tagId])
+}
