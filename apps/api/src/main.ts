@@ -10,7 +10,7 @@ async function bootstrap() {
 
   app.use(cookieParser());
   app.enableCors({
-    origin: 'customer-rm-web.vercel.app',
+    origin: 'https://customer-rm-web.vercel.app',
     credentials: true,
   });
 
