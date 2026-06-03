@@ -13,6 +13,12 @@ export interface UpdateUserDto {
   role?: UserRole
 }
 
+export interface UpdateProfileDto {
+  name?: string
+  email?: string
+  avatarUrl?: string | null
+}
+
 export function listUsers(params?: QueryUsersDto): Promise<PaginatedResult<User>> {
   const searchParams = new URLSearchParams()
   if (params) {
@@ -28,6 +34,17 @@ export function listUsers(params?: QueryUsersDto): Promise<PaginatedResult<User>
 
 export function getUser(id: string, signal?: AbortSignal): Promise<User> {
   return apiRequest(`/users/${id}`, { signal })
+}
+
+export function getMyProfile(): Promise<User & { _count: { contacts: number; deals: number; tasks: number } }> {
+  return apiRequest('/users/me')
+}
+
+export function updateMyProfile(dto: UpdateProfileDto): Promise<User> {
+  return apiRequest('/users/me', {
+    method: 'PATCH',
+    body: JSON.stringify(dto),
+  })
 }
 
 export function updateUser(id: string, dto: UpdateUserDto): Promise<User> {

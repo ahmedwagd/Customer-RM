@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 
 interface TopBarProps {
@@ -34,12 +35,19 @@ export default function TopBar({ onMenuToggle }: TopBarProps) {
         </span>
       </div>
       <div className="flex items-center gap-3">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-container text-label-sm text-on-primary-container">
+        <Link
+          to="/profile"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-container text-label-sm text-on-primary-container transition-opacity hover:opacity-80"
+          title="View profile"
+        >
           {initials}
-        </div>
-        <span className="hidden font-body text-body-md text-brand-neutral sm:inline">
+        </Link>
+        <Link
+          to="/profile"
+          className="hidden font-body text-body-md text-brand-neutral no-underline transition-colors hover:text-brand-primary sm:inline"
+        >
           {user?.email}
-        </span>
+        </Link>
         <button
           onClick={logout}
           className="rounded px-3 py-1.5 text-label-lg text-brand-neutral transition-colors hover:bg-surface-container-high"

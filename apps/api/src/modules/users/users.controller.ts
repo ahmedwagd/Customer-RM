@@ -11,14 +11,28 @@ import {
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { UsersService } from './users.service';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto, UpdateProfileDto } from './dto/update-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import type { CurrentUserType } from '../../common/decorators/current-user.decorator';
 
 @ApiTags('Users')
 @Controller('users')
 @UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly service: UsersService) {}
+
+  @Get('me')
+  @ApiOperation({ summary: 'Get current user profile' })
+  getProfile(@CurrentUser() user: CurrentUserType) {
+    return this.service.findOne(user.id);
+  }
+
+  @Patch('me')
+  @ApiOperation({ summary: 'Update current user profile' })
+  updateProfile(@CurrentUser() user: CurrentUserType, @Body() dto: UpdateProfileDto) {
+    return this.service.updateProfile(user.id, dto);
+  }
 
   @Get()
   @ApiOperation({ summary: 'List users (admin, paginated)' })

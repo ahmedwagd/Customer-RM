@@ -484,3 +484,31 @@
 - TypeScript: `pnpm --filter=web run typecheck` passes clean
 - Production build: `pnpm --filter=web run build` succeeds (320 KB JS gzipped to 89 KB)
 - All 15 pages updated with skeleton loaders, toast notifications, and shared constants
+
+## 21. User Profile
+
+### 21a. Backend — Profile Endpoints
+- Added `GET /users/me` — returns current user profile with stats (`_count: contacts, deals, tasks`)
+- Added `PATCH /users/me` — updates current user's name, email, avatarUrl (no role)
+- Created `UpdateProfileDto` — accepts `name?`, `email?`, `avatarUrl?: string | null` (allows clearing avatar)
+- Both endpoints use `@CurrentUser()` decorator to identify the authenticated user
+
+### 21b. Frontend — Profile Page
+- Created `src/pages/profile/index.tsx` — view/edit toggle page showing:
+  - Avatar initials, name, email, role badge (per `userRoleColors`)
+  - Stats cards: contacts count, deals count, tasks count
+  - Detail section: member since, last updated dates
+  - Edit mode: inline form for avatar URL, name, email with save/cancel
+  - Skeleton loading state matching the codebase pattern
+  - `cancelled` flag pattern for effect cleanup
+- Added `/profile` route to `App.tsx`
+- Auth context now exposes `setUser` to refresh context user after profile update
+
+### 21c. TopBar Profile Link
+- Avatar initials and email in TopBar now link to `/profile` (replaced static display)
+- Link uses `no-underline` + hover color transition for clean appearance
+
+### 21d. Code Review Fixes
+- **Cancellation flag**: Profile effect uses `let cancelled = false` pattern (was missing, pre-existing pages use this pattern)
+- **Avatar clear**: `avatarUrl` accepts `string | null` — empty string sends `null` to backend, clearing the field (was silently ignored)
+- **Type isolation**: `UsersService.updateProfile()` accepts `UpdateProfileDto` directly instead of flowing through `UpdateUserDto` typed method

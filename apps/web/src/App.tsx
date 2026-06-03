@@ -21,6 +21,7 @@ import NotesPage from './pages/notes'
 import ActivitiesPage from './pages/activities'
 import TagsPage from './pages/tags'
 import UsersPage from './pages/users'
+import ProfilePage from './pages/profile'
 
 export default function App() {
   return (
@@ -48,6 +49,7 @@ export default function App() {
           <Route path="/activities" element={<ActivitiesPage />} />
           <Route path="/tags" element={<TagsPage />} />
           <Route path="/users" element={<UsersPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
       </Route>
     </Routes>

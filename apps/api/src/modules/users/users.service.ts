@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserDto, UpdateProfileDto } from './dto/update-user.dto';
 import { QueryUserDto } from './dto/query-user.dto';
 import { PaginatedResult } from '../../common/dto/pagination.dto';
 
@@ -65,6 +65,22 @@ export class UsersService {
   }
 
   async update(id: string, dto: UpdateUserDto) {
+    return this.prisma.user.update({
+      where: { id },
+      data: dto,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        avatarUrl: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  }
+
+  async updateProfile(id: string, dto: UpdateProfileDto) {
     return this.prisma.user.update({
       where: { id },
       data: dto,
