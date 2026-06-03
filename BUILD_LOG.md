@@ -397,3 +397,29 @@
 
 ### 18d. Enum consistency
 - `users/index.tsx` — changed `currentUser?.role === 'ADMIN'` string literal to `currentUser?.role === UserRole.ADMIN` (enum was already imported)
+
+## 19. API Implementation — Phase 4 (Seed Command)
+
+### 19a. Seed Script
+- Created `src/commands/seed.ts` — standalone CLI script that populates all 9 Prisma models with realistic sample data:
+  - 3 users (ADMIN, MANAGER, MEMBER) with `argon2`-hashed passwords (`password123`)
+  - 3 companies (Acme Corp, Globex Inc., Initech)
+  - 6 contacts spread across users/companies with various statuses (ACTIVE, LEAD, INACTIVE)
+  - 5 deals at different stages (NEW → CLOSED_WON)
+  - 5 tasks, some completed, linked to contacts/deals
+  - 4 notes with contextual content
+  - 4 activities of different types (CALL, EMAIL, MEETING, SYSTEM)
+  - 5 tags (VIP, Hot Lead, Partner, Technology, Finance) with unique colors
+  - 14 tag associations across contacts, deals, and companies
+
+### 19b. Script Details
+- Uses same `PrismaPg` adapter + `Pool` pattern as `PrismaService` for consistency
+- Loads `DATABASE_URL` via `dotenv/config`
+- Cleans existing data in dependency-safe order before seeding
+- Wrapped in `try/finally` to guarantee `pool.end()` on both success and failure
+- Run via `pnpm --filter=api seed` (added to `package.json` scripts)
+
+### 19c. Code Review Fixes
+- Added `dotenv` explicitly to dependencies (was already present)
+- Fixed pool connection leak on error: wrapped seed logic in `try/finally` so `pool.end()` always executes
+- Typecheck and build both pass clean
