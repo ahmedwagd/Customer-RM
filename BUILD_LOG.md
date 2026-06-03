@@ -512,3 +512,25 @@
 - **Cancellation flag**: Profile effect uses `let cancelled = false` pattern (was missing, pre-existing pages use this pattern)
 - **Avatar clear**: `avatarUrl` accepts `string | null` — empty string sends `null` to backend, clearing the field (was silently ignored)
 - **Type isolation**: `UsersService.updateProfile()` accepts `UpdateProfileDto` directly instead of flowing through `UpdateUserDto` typed method
+
+
+## 22. UI Components Alignment (Template Based)
+
+### 22a. Dependencies & Infrastructure
+- Installed react-icons and @radix-ui/react-slider for the web frontend.
+- Integrated Material Symbols Outlined via Google Fonts in index.html to match template iconography.
+- Defined custom Tailwind v4 @utility tokens for spacing (p-stack-*, m-stack-*, gap-stack-*, gap-gutter) and container margins to ensure consistent 8px-rule layout.
+
+### 22b. New Components
+- Icon Component (src/components/ui/Icon.tsx): A wrapper for Material Symbols that supports filled states and custom styling.
+- Slider Component (src/components/ui/Slider.tsx): Implemented using Radix UI for a highly accessible, styled range slider with live value display.
+
+### 22c. Enhanced Existing Components
+- Input & Dropdown: Added support for leading icons (e.g., search, calendar, currency symbols) with appropriate padding and absolute positioning.
+- Chip: Enhanced to support both leading and trailing icons.
+- Card: Added a new Section Header pattern allowing cards to have an integrated icon and title header.
+- Breadcrumbs: Updated to use the new Icon component for chevron separators.
+
+### 22d. Verification
+- Ran pnpm typecheck to ensure all new props and components are type-safe.
+- Verified CSS utility applications in index.css.
