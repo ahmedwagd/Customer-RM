@@ -79,3 +79,44 @@
 - **Credential leak fix**: Replaced live `DATABASE_URL` in `README.md` with placeholder
 - **API key leak fix**: Added `.opencode/` to `.gitignore` and removed from git tracking (previously committed)
 - **Push**: Forced pushed amended commit to `origin/main` at `https://github.com/ahmedwagd/Customer-RM.git`
+
+## 10. Swagger Integration
+
+- Installed `@nestjs/swagger` (NestJS 11 compatible)
+- Configured `SwaggerModule` in `main.ts` — title "CRM API", version "1.0", docs served at `GET /api/docs`
+- Added `@ApiTags('App')` and `@ApiOperation` decorators to `app.controller.ts`
+- Verified typecheck passes
+
+## 11. API Folder Structure Docs
+
+- Fetched the CMS-API reference structure from `https://github.com/ahmedwagd/CMS-API/tree/main/src`
+- Updated `README.md` with full API tree under "API Structure" section (auth, commands, common, config, modules, prisma)
+- Updated `AGENTS.md` — added "API Structure" tree, moved Swagger mention into repo state
+- Both files now reflect the target structure consistently
+
+## 12. API Implementation — Phase 1 (Shared Infrastructure)
+
+### 12a. Dependencies
+- Installed `class-validator`, `class-transformer` for DTO validation
+- Installed `@nestjs/config` for env management with `ConfigModule.forRoot()`
+- Installed `zod` (replaced initial `joi`) for env schema validation
+
+### 12b. Config Module
+- Created `src/config/config.module.ts` — uses `@nestjs/config` `ConfigModule.forRoot()` with Zod `validate` function
+- Created `src/config/config.service.ts` — `AppConfigService` wrapping `@nestjs/config` with typed getters inferred from `EnvConfig` (via `z.infer`)
+- Env vars validated: `DATABASE_URL` (required), `JWT_SECRET`, `JWT_REFRESH_SECRET` (min 16), `JWT_EXPIRES_IN`, `JWT_REFRESH_EXPIRES_IN`, `PORT`, `NODE_ENV`
+- Marked as `@Global()` module, imported in `AppModule`
+
+### 12c. Common Infra
+- Created `src/common/filters/prisma-client-exception.filter.ts` — handles Prisma errors P2002 (409), P2025 (404), P2003 (400); uses typed `express.Response`
+- Created `src/common/dto/pagination.dto.ts` — `PaginationDto` (page/limit/sortBy/sortOrder + skip helper) and `PaginatedResult<T>` generic wrapper
+
+### 12d. Global App Setup
+- `main.ts` — added `ValidationPipe` (whitelist, transform, forbidNonWhitelisted) + `PrismaClientExceptionFilter`
+- `PrismaService` — now injects `AppConfigService` instead of reading `process.env.DATABASE_URL` directly
+- `.env` — added all env vars: `JWT_SECRET`, `JWT_REFRESH_SECRET`, `JWT_EXPIRES_IN`, `JWT_REFRESH_EXPIRES_IN`, `PORT`, `NODE_ENV`
+
+### 12e. Code Review Fixes
+- Fixed `dotenv` not being loaded — removed manual `import 'dotenv/config'` (handled by `@nestjs/config`)
+- Fixed `ConfigService` production-safety: falls back to dev defaults only in non-production
+- Fixed `PrismaClientExceptionFilter` — replaced fragile inline response type with `import type { Response } from 'express'`
