@@ -4,7 +4,12 @@
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**"],
-      "inputs": ["$TURBO_DEFAULT$", "!dist/**"]
+      "inputs": ["$TURBO_DEFAULT$", "!dist/**"],
+      "env": [
+        "DATABASE_URL",
+        "JWT_SECRET",
+        "JWT_REFRESH_SECRET"
+      ]
     },
     "dev": {
       "cache": false,
@@ -19,5 +24,8 @@
     "typecheck": {
       "dependsOn": ["^build"]
     }
-  }
+  },
+  "globalDependencies": [
+    "tsconfig.json"
+  ]
 }
