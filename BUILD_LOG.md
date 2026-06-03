@@ -278,3 +278,41 @@
 - **File rename**: `src/api/note.ts` → `src/api/notes.ts` for plural consistency
 - **Confirm password**: Added confirm password field with client-side match validation on Register page
 - **Typecheck, lint, build**: All pass clean
+
+## 16. Web Frontend — Phase 2 (Shared UI Components)
+
+### 16a. UI Component Library
+- Created `src/components/ui/` with 15 files (14 components + barrel export `index.ts`)
+- All components use Tailwind v4 `@theme` tokens from `index.css` (no hardcoded raw colors)
+
+| Component | File | Features |
+|-----------|------|----------|
+| **Button** | `Button.tsx` | 4 variants (primary/secondary/ghost/danger), 3 sizes (sm/md/lg), loading spinner |
+| **Input** | `Input.tsx` | MD3 outlined style, floating label via `peer-placeholder-shown`, error state, 8px radius |
+| **Card** | `Card.tsx` | 1px border, 16px radius, optional `shadow-card` elevation, clickable variant |
+| **DataTable** | `DataTable.tsx` | Typed generic `<T>`, key constrained to `keyof T & string`, sortable headers, horizontal dividers only |
+| **Chip** | `Chip.tsx` | 5 color variants, removable with `e.stopPropagation()`, 8px radius |
+| **FAB** | `FAB.tsx` | Fixed bottom-right, brand-primary fill, `shadow-modal` elevation, scale animation on click |
+| **Modal** | `Modal.tsx` | Escape key + backdrop click to close, shadow-modal, 16px radius |
+| **SearchBar** | `SearchBar.tsx` | Pill-shaped (full radius), inline SVG search icon, focus ring |
+| **Pagination** | `Pagination.tsx` | Prev/Next, page numbers with ellipsis, page size selector, resets to page 1 on limit change |
+| **Avatar** | `Avatar.tsx` | Image → initials fallback (`??` for empty name), 3 sizes |
+| **Dropdown** | `Dropdown.tsx` | Native `<select>`, label, placeholder, error state, focus ring |
+| **Badge** | `Badge.tsx` | 5 color variants, pill shape |
+| **Spinner** | `Spinner.tsx` | 3 sizes, CSS border-based animation |
+| **Skeleton** | `Skeleton.tsx` | Text/circular/rectangular + `TableSkeleton`/`CardSkeleton` presets |
+
+### 16b. Google Fonts
+- Added `<link>` tags in `index.html` for **Hanken Grotesk** (400, 500, 600, 700) and **Inter** (400, 500, 600)
+- Added preconnect hints to `fonts.googleapis.com` and `fonts.gstatic.com` with `crossorigin`
+- Fonts served via `display=swap`
+
+### 16c. Code Review Fixes (Round 3)
+- **Form submission risk**: Added `type="button"` to all non-submit buttons (Modal close, 3 Pagination buttons)
+- **Loading UX**: Button now replaces children with spinner when `loading=true` instead of rendering both
+- **Modal UX**: Added backdrop `onClick={onClose}` for dismiss-on-click-outside behavior
+- **DataTable type safety**: Changed `Column.key` from `string` to `keyof T & string` — prevents accessing non-existent fields at compile time
+- **Pagination edge case**: Limit change now resets to page 1 via `onPageChange(1)` to prevent out-of-range pages
+- **Avatar edge case**: Empty/whitespace name renders `??` instead of blank circle
+- **Event propagation**: Chip remove button calls `e.stopPropagation()` to prevent parent click handlers from firing
+- **Typecheck, lint**: All pass clean
