@@ -9,7 +9,8 @@
         "DATABASE_URL",
         "JWT_SECRET",
         "JWT_REFRESH_SECRET"
-      ]
+      ],
+      "cache": false
     },
     "dev": {
       "cache": false,
