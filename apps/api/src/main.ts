@@ -9,6 +9,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.use(cookieParser());
+  app.enableCors({
+    origin: 'https://customer-rm-q5bgbt7tg-ahmed-wagdys-projects.vercel.app',
+    credentials: true,
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
