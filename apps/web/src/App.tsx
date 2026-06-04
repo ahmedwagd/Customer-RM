@@ -17,6 +17,8 @@ import DealsPage from './pages/deals'
 import NewDeal from './pages/deals/NewDeal'
 import DealDetail from './pages/deals/DealDetail'
 import TasksPage from './pages/tasks'
+import LeadsPage from './pages/leads'
+import NewLead from './pages/leads/NewLead'
 import NotesPage from './pages/notes'
 import ActivitiesPage from './pages/activities'
 import TagsPage from './pages/tags'
@@ -44,6 +46,8 @@ export default function App() {
           <Route path="/deals" element={<DealsPage />} />
           <Route path="/deals/new" element={<NewDeal />} />
           <Route path="/deals/:id" element={<DealDetail />} />
+          <Route path="/leads" element={<LeadsPage />} />
+          <Route path="/leads/new" element={<NewLead />} />
           <Route path="/tasks" element={<TasksPage />} />
           <Route path="/notes" element={<NotesPage />} />
           <Route path="/activities" element={<ActivitiesPage />} />

@@ -4,6 +4,7 @@ import Icon from "./ui/Icon";
 
 const navItems = [
   { to: "/dashboard", label: "Dashboard", icon: "dashboard" },
+  { to: "/leads", label: "Leads", icon: "leaderboard" },
   { to: "/contacts", label: "Contacts", icon: "person" },
   { to: "/companies", label: "Companies", icon: "corporate_fare" },
   { to: "/deals", label: "Deals", icon: "handshake" },
