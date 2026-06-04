@@ -97,21 +97,21 @@ export default function Dashboard() {
           <>
             <MetricCard 
               label="Total Revenue" 
-              value={`$${(stats.deals * 1200).toLocaleString()}`} 
+              value={`$${((stats.deals ?? 0) * 1200).toLocaleString()}`} 
               trend={12} 
               icon="payments" 
               trendUp 
             />
             <MetricCard 
               label="New Leads" 
-              value={stats.contacts.toString()} 
+              value={(stats.contacts ?? 0).toString()} 
               trend={8} 
               icon="person_add" 
               trendUp 
             />
             <MetricCard 
               label="Active Deals" 
-              value={stats.deals.toString()} 
+              value={(stats.deals ?? 0).toString()} 
               trend={4} 
               icon="handshake" 
               trendUp={false} 
