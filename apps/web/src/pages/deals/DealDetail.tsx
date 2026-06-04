@@ -43,7 +43,7 @@ export default function DealDetail() {
 
   if (loading) {
     return (
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6 p-6">
         <div className="flex items-start justify-between">
           <div>
             <Skeleton className="mb-2 h-8 w-64" />
@@ -69,17 +69,17 @@ export default function DealDetail() {
     )
   }
 
-  if (!deal) return <p className="text-body-md text-brand-neutral">Deal not found</p>
+  if (!deal) return <p className="text-body-md text-on-surface-variant">Deal not found</p>
 
   const currentIdx = dealStageOrder.indexOf(deal.stage)
   const canAdvance = currentIdx >= 0 && currentIdx < dealStageOrder.length - 1
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 p-6">
       <div className="flex items-start justify-between">
         <div>
           <h1 className="font-heading text-headline-lg text-on-surface">{deal.title}</h1>
-          <p className="mt-1 text-body-md text-brand-neutral">
+          <p className="mt-1 text-body-md text-on-surface-variant">
             <Chip color={dealStageColors[deal.stage] ?? 'neutral'}>{dealStageLabels[deal.stage] ?? deal.stage}</Chip>
           </p>
         </div>
@@ -99,33 +99,33 @@ export default function DealDetail() {
             <h3 className="font-heading text-title-md text-on-surface">Details</h3>
             <dl className="mt-3 space-y-3">
               <div>
-                <dt className="text-label-sm text-brand-neutral">Value</dt>
+                <dt className="text-label-sm text-on-surface-variant">Value</dt>
                 <dd className="text-body-md text-on-surface">
                   {deal.value != null ? `${deal.currency ?? 'USD'} ${deal.value.toLocaleString()}` : '—'}
                 </dd>
               </div>
               <div>
-                <dt className="text-label-sm text-brand-neutral">Stage</dt>
+                <dt className="text-label-sm text-on-surface-variant">Stage</dt>
                 <dd className="text-body-md text-on-surface">{dealStageLabels[deal.stage] ?? deal.stage}</dd>
               </div>
               <div>
-                <dt className="text-label-sm text-brand-neutral">Close Date</dt>
+                <dt className="text-label-sm text-on-surface-variant">Close Date</dt>
                 <dd className="text-body-md text-on-surface">
                   {deal.closeDate ? new Date(deal.closeDate).toLocaleDateString() : '—'}
                 </dd>
               </div>
               <div>
-                <dt className="text-label-sm text-brand-neutral">Contact</dt>
+                <dt className="text-label-sm text-on-surface-variant">Contact</dt>
                 <dd className="text-body-md text-on-surface">
                   {deal.contact ? `${deal.contact.firstName} ${deal.contact.lastName}` : '—'}
                 </dd>
               </div>
               <div>
-                <dt className="text-label-sm text-brand-neutral">Company</dt>
+                <dt className="text-label-sm text-on-surface-variant">Company</dt>
                 <dd className="text-body-md text-on-surface">{deal.company?.name ?? '—'}</dd>
               </div>
               <div>
-                <dt className="text-label-sm text-brand-neutral">Owner</dt>
+                <dt className="text-label-sm text-on-surface-variant">Owner</dt>
                 <dd className="text-body-md text-on-surface">{deal.user?.name ?? '—'}</dd>
               </div>
             </dl>
@@ -146,7 +146,7 @@ export default function DealDetail() {
               <div className="mt-3 space-y-2">
                 {deal.tasks.map((t) => (
                   <div key={t.id} className="flex items-center gap-2">
-                    <span className={`text-body-md ${t.completed ? 'line-through text-brand-neutral' : 'text-on-surface'}`}>
+                    <span className={`text-body-md ${t.completed ? 'line-through text-on-surface-variant' : 'text-on-surface'}`}>
                       {t.title}
                     </span>
                   </div>
@@ -162,7 +162,7 @@ export default function DealDetail() {
                 {deal.notes.map((n) => (
                   <div key={n.id} className="border-b border-outline-variant pb-2 last:border-b-0">
                     <p className="text-body-md text-on-surface">{n.content}</p>
-                    <p className="mt-0.5 text-label-sm text-brand-neutral">
+                    <p className="mt-0.5 text-label-sm text-on-surface-variant">
                       {n.user?.name} — {new Date(n.createdAt).toLocaleDateString()}
                     </p>
                   </div>
@@ -178,7 +178,7 @@ export default function DealDetail() {
                 {deal.activities.map((a) => (
                   <div key={a.id} className="border-b border-outline-variant pb-2 last:border-b-0">
                     <p className="text-body-md text-on-surface">{a.subject}</p>
-                    <p className="mt-0.5 text-label-sm text-brand-neutral">
+                    <p className="mt-0.5 text-label-sm text-on-surface-variant">
                       {a.type} — {new Date(a.occurredAt).toLocaleDateString()}
                     </p>
                   </div>

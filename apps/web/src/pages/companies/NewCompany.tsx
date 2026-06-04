@@ -32,15 +32,15 @@ export default function NewCompany() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl">
-      <div className="mb-6">
-        <h1 className="font-heading text-headline-lg text-on-surface">New Company</h1>
-        <p className="mt-1 text-body-md text-brand-neutral">Add a new company</p>
+    <div className="flex flex-col gap-6 p-6 mx-auto max-w-2xl">
+      <div>
+        <h1 className="font-headline-md text-headline-md font-bold text-on-surface">New Company</h1>
+        <p className="text-on-surface-variant font-body-md">Add a new company</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         {error && (
-          <div className="rounded bg-error-container px-4 py-2 text-body-md text-on-error-container">
+          <div className="rounded-lg bg-error-container px-4 py-3 text-body-md text-on-error-container">
             {error}
           </div>
         )}
@@ -49,12 +49,12 @@ export default function NewCompany() {
         <Input label="Domain" value={form.domain} onChange={(e) => setForm({ ...form, domain: e.target.value })} placeholder="example.com" />
 
         <div>
-          <label className="mb-1 block text-label-lg text-brand-neutral">Notes</label>
+          <label className="mb-1 block text-label-lg text-on-surface-variant">Notes</label>
           <textarea
             value={form.notes}
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
             rows={4}
-            className="w-full rounded border border-outline-variant bg-surface-container-lowest px-3 py-2.5 text-body-md text-on-surface outline-none transition-all focus:border-2 focus:border-brand-primary"
+            className="w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2.5 text-body-md text-on-surface outline-none transition-all focus:border-2 focus:border-primary"
           />
         </div>
 

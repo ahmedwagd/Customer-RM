@@ -42,22 +42,32 @@ export default function Dashboard() {
 
   useEffect(() => {
     let cancelled = false
-    Promise.all([
-      listContacts({ limit: 1 }),
-      listDeals({ limit: 1 }),
-      listTasks({ completed: false, limit: 1 }),
-      listActivities(),
-    ]).then(([contactsRes, dealsRes, tasksRes, activitiesData]) => {
-      if (cancelled) return
-      setStats({
-        contacts: contactsRes.total,
-        deals: dealsRes.total,
-        tasks: tasksRes.total,
-      })
-      setActivities(activitiesData.slice(0, 10))
-    }).catch(() => { toast('Failed to load dashboard data', 'error') }).finally(() => {
-      if (!cancelled) setLoading(false)
-    })
+    let pending = 4
+
+    function done() {
+      if (!cancelled) { pending--; if (pending === 0) setLoading(false) }
+    }
+
+    listContacts({ limit: 1 })
+      .then((res) => { if (!cancelled) setStats((s) => ({ ...s, contacts: res.total })) })
+      .catch(() => { toast('Failed to load contacts', 'error') })
+      .finally(done)
+
+    listDeals({ limit: 1 })
+      .then((res) => { if (!cancelled) setStats((s) => ({ ...s, deals: res.total })) })
+      .catch(() => { toast('Failed to load deals', 'error') })
+      .finally(done)
+
+    listTasks({ completed: false, limit: 1 })
+      .then((res) => { if (!cancelled) setStats((s) => ({ ...s, tasks: res.total })) })
+      .catch(() => { toast('Failed to load tasks', 'error') })
+      .finally(done)
+
+    listActivities()
+      .then((res) => { if (!cancelled) setActivities(res.slice(0, 10)) })
+      .catch(() => { toast('Failed to load activities', 'error') })
+      .finally(done)
+
     return () => { cancelled = true }
   }, [toast])
 
