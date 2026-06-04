@@ -67,19 +67,34 @@ export default function UsersPage() {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="font-heading text-headline-lg text-on-surface">Users</h1>
-        <p className="mt-1 text-body-md text-brand-neutral">{isAdmin ? 'Manage users and roles' : 'Team members'}</p>
+        <p className="mt-1 text-body-md text-on-surface-variant">{isAdmin ? 'Manage users and roles' : 'Team members'}</p>
       </div>
 
       <div className="flex-1">
         <SearchBar value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} placeholder="Search users..." />
       </div>
 
-      {loading ? <TableSkeleton rows={8} cols={4} /> : (
-        <>
-          <DataTable columns={columns} data={data.data} keyExtractor={(r) => r.id} />
-          <Pagination page={data.page} totalPages={data.totalPages} total={data.total} limit={data.limit} onPageChange={setPage} onLimitChange={setLimit} />
-        </>
-      )}
+      {loading
+        ? <TableSkeleton rows={8} cols={4} />
+        : (
+          <div className="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm flex flex-col">
+            <DataTable columns={columns} data={data.data} keyExtractor={(r) => r.id} />
+            <div className="px-6 py-4 flex items-center justify-between bg-surface-container-low border-t border-outline-variant">
+              <p className="text-label-sm text-on-surface-variant">
+                Showing {(data.page - 1) * data.limit + 1} to {Math.min(data.page * data.limit, data.total)} of {data.total} users
+              </p>
+              <Pagination
+                page={data.page}
+                totalPages={data.totalPages}
+                total={data.total}
+                limit={data.limit}
+                onPageChange={setPage}
+                onLimitChange={setLimit}
+              />
+            </div>
+          </div>
+        )
+      }
     </div>
   )
 }

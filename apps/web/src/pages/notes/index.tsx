@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Button, Card, Modal, FAB, CardSkeleton } from '../../components/ui'
+import { Button, Card, Modal, FAB, CardSkeleton, Icon } from '../../components/ui'
 import { listNotes, createNote, updateNote, deleteNote } from '../../api/notes'
 import type { Note } from '../../api/types'
 import { useToast } from '../../hooks/useToast'
@@ -48,7 +48,7 @@ export default function NotesPage() {
     <div className="flex flex-col gap-6">
       <div>
         <h1 className="font-heading text-headline-lg text-on-surface">Notes</h1>
-        <p className="mt-1 text-body-md text-brand-neutral">Quick notes and observations</p>
+        <p className="mt-1 text-body-md text-on-surface-variant">Quick notes and observations</p>
       </div>
 
       {loading ? (
@@ -56,16 +56,20 @@ export default function NotesPage() {
           {Array.from({ length: 6 }).map((_, i) => <CardSkeleton key={i} />)}
         </div>
       ) : notes.length === 0
-        ? <p className="text-body-md text-brand-neutral">No notes yet. Click + to add one.</p>
+        ? <p className="text-body-md text-on-surface-variant">No notes yet. Click + to add one.</p>
         : <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {notes.map((note) => (
               <Card key={note.id} elevated>
                 <p className="text-body-md text-on-surface whitespace-pre-wrap line-clamp-6">{note.content}</p>
                 <div className="mt-3 flex items-center justify-between">
-                  <p className="text-label-sm text-brand-neutral">{note.user?.name ?? 'Unknown'} · {new Date(note.createdAt).toLocaleDateString()}</p>
+                  <p className="text-label-sm text-on-surface-variant">{note.user?.name ?? 'Unknown'} · {new Date(note.createdAt).toLocaleDateString()}</p>
                   <div className="flex gap-2">
-                    <button type="button" onClick={() => openEdit(note)} className="text-label-sm text-brand-primary hover:underline">Edit</button>
-                    <button type="button" onClick={() => handleDelete(note.id)} className="text-label-sm text-error hover:underline">Delete</button>
+                    <Button variant="ghost" size="sm" onClick={() => openEdit(note)}>
+                      <Icon name="edit" />
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => handleDelete(note.id)} className="text-error">
+                      <Icon name="delete" />
+                    </Button>
                   </div>
                 </div>
               </Card>
@@ -79,9 +83,9 @@ export default function NotesPage() {
         <div className="flex flex-col gap-4">
           {error && <div className="rounded bg-error-container px-4 py-2 text-body-md text-on-error-container">{error}</div>}
           <div>
-            <label className="mb-1 block text-label-lg text-brand-neutral">Content *</label>
+            <label className="mb-1 block text-label-lg text-on-surface-variant">Content *</label>
             <textarea value={content} onChange={(e) => setContent(e.target.value)} rows={6}
-              className="w-full rounded border border-outline-variant bg-surface-container-lowest px-3 py-2.5 text-body-md text-on-surface outline-none transition-all focus:border-2 focus:border-brand-primary" />
+              className="w-full rounded-xl border border-outline-variant bg-surface-container-lowest px-3 py-2.5 text-body-md text-on-surface outline-none transition-all focus:ring-2 focus:ring-primary-container" />
           </div>
           <div className="flex gap-3 pt-2">
             <Button onClick={handleSubmit} loading={submitting}>{editingNote ? 'Save' : 'Create Note'}</Button>

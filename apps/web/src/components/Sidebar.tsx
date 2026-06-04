@@ -31,21 +31,25 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
       )}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-40 flex w-60 flex-col border-r border-outline-variant bg-brand-surface-secondary transition-transform duration-300
+          fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-outline-variant bg-surface-container-low transition-transform duration-300
           md:static md:translate-x-0
           ${open ? "translate-x-0" : "-translate-x-full"}
         `}
       >
-        <div className="flex items-center justify-center py-4 px-6 border-b border-outline-variant">
+        <div className="p-6">
           <NavLink
             to="/dashboard"
-            className="flex items-center gap-2 no-underline"
+            className="flex items-center gap-3 no-underline"
             onClick={onClose}
           >
-            <img src={logo} alt="Ma5zan" className="h-32 w-auto" />
+            <img src={logo} alt="Ma5zan" className="w-10 h-10 rounded-xl object-cover" />
+            <div>
+              <h2 className="font-title-lg text-title-lg font-black text-on-surface">Ma5zan</h2>
+              <p className="font-label-sm text-label-sm text-on-surface-variant">Sales Workspace</p>
+            </div>
           </NavLink>
         </div>
-        <nav className="flex-1 overflow-y-auto py-2">
+        <nav className="flex-1 overflow-y-auto px-4 space-y-1">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
@@ -53,18 +57,48 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
               end={item.to === "/dashboard"}
               onClick={onClose}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-6 py-2.5 text-label-lg no-underline transition-colors ${
+                `flex items-center gap-3 px-4 py-3 font-label-lg text-label-lg no-underline rounded-full transition-colors ${
                   isActive
-                    ? "bg-primary-fixed text-on-primary-fixed-variant"
-                    : "text-brand-neutral hover:bg-surface-container-high"
+                    ? "bg-secondary-container text-on-secondary-container font-bold"
+                    : "text-on-surface-variant hover:bg-surface-container-high"
                 }`
               }
             >
-              <Icon name={item.icon} />
-              {item.label}
+              {({ isActive }) => (
+                <>
+                  <Icon name={item.icon} filled={isActive} />
+                  {item.label}
+                </>
+              )}
             </NavLink>
           ))}
         </nav>
+        <div className="p-4 mt-auto space-y-1">
+          <NavLink
+            to="/leads/new"
+            onClick={onClose}
+            className="w-full flex items-center justify-center gap-2 mb-6 bg-primary text-on-primary py-3 px-4 rounded-full font-label-lg text-label-lg hover:opacity-90 transition-all shadow-md no-underline"
+          >
+            <Icon name="add" />
+            Create Lead
+          </NavLink>
+          <NavLink
+            to="#"
+            onClick={onClose}
+            className="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all no-underline font-label-lg text-label-lg"
+          >
+            <Icon name="contact_support" />
+            Support
+          </NavLink>
+          <NavLink
+            to="/profile"
+            onClick={onClose}
+            className="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-all no-underline font-label-lg text-label-lg"
+          >
+            <Icon name="settings" />
+            Settings
+          </NavLink>
+        </div>
       </aside>
     </>
   );

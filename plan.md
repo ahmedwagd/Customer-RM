@@ -208,3 +208,55 @@ Typography tokens from `index.css` (`font-headline-lg`, `font-title-lg`, `font-b
 | 7 | Low | New Lead (if needed) | Medium |
 
 Each phase should be done incrementally, preserving existing functionality (API integration, navigation, breadcrumbs) while updating the visual layout to match templates.
+
+---
+
+## Phase 8: Tags, Auth, Notes, Users, Activities Pages
+
+### Common Changes Across All Pages
+1. Replace `text-brand-neutral` → `text-on-surface-variant` (theme token)
+2. Replace raw `<button>` → `Button` component where appropriate
+3. Replace hardcoded focus colors (`focus:border-[#1a73e8]`) → `focus:ring-2 focus:ring-primary-container`
+4. Add `rounded-xl border border-outline-variant bg-surface-container-lowest shadow-sm` container wrappers for list/card areas
+5. Use `Icon` component instead of raw text/emoji icons
+
+### 8a. Tags Page (`apps/web/src/pages/tags/index.tsx`)
+**Changes:**
+- Import `Icon` component
+- Cards: `rounded-xl` instead of `rounded-lg`
+- Replace Edit/Delete `<button>` links → `Button variant="ghost" size="sm"` with `Icon name="edit"` / `Icon name="delete"`
+- Replace `text-brand-neutral` → `text-on-surface-variant`
+
+### 8b. Auth Pages (`apps/web/src/pages/auth/Login.tsx`, `Register.tsx`)
+**Changes:**
+- Import `Button`, `Input` from `../../components/ui`
+- Replace raw `<input>` → `Input` component
+- Replace raw submit `<button>` → `Button variant="primary"` full-width
+- Replace `text-brand-neutral` → `text-on-surface-variant`
+- Replace `focus:border-[#1a73e8]` → theme token classes
+- Already wrapped in AuthLayout ✓
+
+### 8c. Notes Page (`apps/web/src/pages/notes/index.tsx`)
+**Changes:**
+- Import `Icon` component
+- Replace Edit/Delete `<button>` links → `Button variant="ghost" size="sm"` with icons
+- Replace `text-brand-neutral` → `text-on-surface-variant`
+- Textarea: add `rounded-xl` + theme border tokens
+
+### 8d. Users Page (`apps/web/src/pages/users/index.tsx`)
+**Changes:**
+- Add `rounded-xl border border-outline-variant overflow-hidden bg-surface-container-lowest` wrapper around DataTable + Pagination
+- Add "Showing X to Y of Z" text + Pagination in bottom bar (matching contacts page pattern)
+- Replace `text-brand-neutral` → `text-on-surface-variant`
+
+### 8e. Activities Page (`apps/web/src/pages/activities/index.tsx`)
+**Changes:**
+- Import `Icon` component
+- Replace emoji (`activityTypeIcons`) → `Icon name={...}` mapping
+- Replace inline `border-l-[color]` → proper border-l color classes
+- Replace `bg-surface-container-lowest` cards with `rounded-xl border border-outline-variant shadow-sm`
+- Replace `text-brand-neutral` → `text-on-surface-variant`
+
+**Order:** tags → activities → notes → users → auth (Login + Register)
+
+**Verification:** Run `pnpm --filter=web typecheck` and `pnpm --filter=web lint` after all changes.

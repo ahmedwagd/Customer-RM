@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Button, Modal, Input, Skeleton } from '../../components/ui'
+import { Button, Modal, Input, Skeleton, Icon } from '../../components/ui'
 import { listTags, createTag, updateTag, deleteTag } from '../../api/tags'
 import type { Tag } from '../../api/types'
 import { useToast } from '../../hooks/useToast'
@@ -54,7 +54,7 @@ export default function TagsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-heading text-headline-lg text-on-surface">Tags</h1>
-          <p className="mt-1 text-body-md text-brand-neutral">Manage your tags</p>
+          <p className="mt-1 text-body-md text-on-surface-variant">Manage your tags</p>
         </div>
         <Button onClick={openCreate}>New Tag</Button>
       </div>
@@ -62,7 +62,7 @@ export default function TagsPage() {
       {loading ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="flex items-center gap-3 rounded-lg border border-outline-variant bg-surface-container-lowest p-4 shadow-sm">
+            <div key={i} className="flex items-center gap-3 rounded-xl border border-outline-variant bg-surface-container-lowest p-4 shadow-sm">
               <Skeleton variant="circular" width={16} height={16} />
               <div className="flex-1">
                 <Skeleton className="mb-1 h-4 w-1/3" />
@@ -72,20 +72,24 @@ export default function TagsPage() {
           ))}
         </div>
       ) : tags.length === 0
-        ? <p className="text-body-md text-brand-neutral">No tags yet. Create your first tag.</p>
+        ? <p className="text-body-md text-on-surface-variant">No tags yet. Create your first tag.</p>
         : <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {tags.map((tag) => (
-              <div key={tag.id} className="flex items-center justify-between rounded-lg border border-outline-variant bg-surface-container-lowest p-4 shadow-sm">
+              <div key={tag.id} className="flex items-center justify-between rounded-xl border border-outline-variant bg-surface-container-lowest p-4 shadow-sm">
                 <div className="flex items-center gap-3">
                   <span className="h-4 w-4 rounded-full" style={{ backgroundColor: tag.color }} />
                   <div>
                     <p className="text-body-md font-medium text-on-surface">{tag.name}</p>
-                    <p className="text-label-sm text-brand-neutral">{usageCount(tag)} uses</p>
+                    <p className="text-label-sm text-on-surface-variant">{usageCount(tag)} uses</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <button type="button" onClick={() => openEdit(tag)} className="text-label-sm text-brand-primary hover:underline">Edit</button>
-                  <button type="button" onClick={() => handleDelete(tag.id)} className="text-label-sm text-error hover:underline">Delete</button>
+                  <Button variant="ghost" size="sm" onClick={() => openEdit(tag)}>
+                    <Icon name="edit" />
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => handleDelete(tag.id)} className="text-error">
+                    <Icon name="delete" />
+                  </Button>
                 </div>
               </div>
             ))}
@@ -97,7 +101,7 @@ export default function TagsPage() {
           {error && <div className="rounded bg-error-container px-4 py-2 text-body-md text-on-error-container">{error}</div>}
           <Input label="Tag Name *" value={name} onChange={(e) => setName(e.target.value)} required />
           <div>
-            <label className="mb-2 block text-label-lg text-brand-neutral">Color</label>
+            <label className="mb-2 block text-label-lg text-on-surface-variant">Color</label>
             <div className="flex flex-wrap gap-2">
               {presetColors.map((c) => (
                 <button key={c} type="button" onClick={() => setColor(c)}

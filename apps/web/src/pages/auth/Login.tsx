@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Button, Input } from '../../components/ui'
 import { useAuth } from '../../hooks/useAuth'
 
 export default function Login() {
@@ -37,43 +38,17 @@ export default function Login() {
         </div>
       )}
 
-      <div>
-        <label className="mb-1 block text-label-lg text-brand-neutral">
-          Email
-        </label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="w-full rounded border border-outline-variant px-3 py-2.5 text-body-md text-on-surface outline-none transition-[border] focus:border-[#1a73e8] focus:border-2"
-        />
-      </div>
+      <Input label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
 
-      <div>
-        <label className="mb-1 block text-label-lg text-brand-neutral">
-          Password
-        </label>
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          className="w-full rounded border border-outline-variant px-3 py-2.5 text-body-md text-on-surface outline-none transition-[border] focus:border-[#1a73e8] focus:border-2"
-        />
-      </div>
+      <Input label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="w-full rounded bg-primary-container px-4 py-2.5 text-label-lg text-on-primary-container transition-opacity hover:opacity-90 disabled:opacity-60"
-      >
+      <Button type="submit" loading={submitting} className="w-full">
         {submitting ? 'Signing in…' : 'Sign in'}
-      </button>
+      </Button>
 
-      <p className="text-center text-body-md text-brand-neutral">
+      <p className="text-center text-body-md text-on-surface-variant">
         No account?{' '}
-        <Link to="/register" className="text-primary-container no-underline hover:underline">
+        <Link to="/register" className="text-primary no-underline hover:underline">
           Register
         </Link>
       </p>
