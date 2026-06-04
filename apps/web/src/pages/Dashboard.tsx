@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Button, Skeleton, Card, Avatar, Icon } from '../components/ui'
+import { Button, Skeleton, Card, Icon } from '../components/ui'
 import { listContacts } from '../api/contacts'
 import { listDeals } from '../api/deals'
 import { listTasks } from '../api/tasks'
@@ -13,8 +13,8 @@ function ActivityItem({ activity }: { activity: Activity }) {
   return (
     <div className="flex gap-4 py-4 first:pt-0 last:pb-0">
       <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
-        activity.type === 'email' ? 'bg-primary-container text-on-primary-container' :
-        activity.type === 'meeting' ? 'bg-tertiary-container text-on-tertiary-container' :
+        activity.type === 'EMAIL' ? 'bg-primary-container text-on-primary-container' :
+        activity.type === 'MEETING' ? 'bg-tertiary-container text-on-tertiary-container' :
         'bg-surface-container-highest text-on-surface-variant'
       }`}>
         <Icon name={activityTypeIcons[activity.type] || 'event'} className="text-xl" />

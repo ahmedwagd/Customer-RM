@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { DataTable, FAB, Skeleton, Chip, Button, Avatar, Icon } from '../../components/ui'
+import { DataTable, Skeleton, Chip, Button, Avatar, Icon } from '../../components/ui'
 import type { Column } from '../../components/ui'
 import { listDeals, updateDeal } from '../../api/deals'
 import type { Deal } from '../../api/types'
 import { DealStage } from '../../api/types'
-import { dealStageLabels, dealStageColors, dealStageOrder } from '../../api/types'
+import { dealStageLabels, dealStageColors } from '../../api/types'
 import { useToast } from '../../hooks/useToast'
 
 const stageBorderColors: Record<string, string> = {
@@ -138,7 +138,7 @@ export default function DealsPage() {
                       const ownerName = deal.contact 
                         ? `${deal.contact.firstName} ${deal.contact.lastName}`
                         : deal.user 
-                          ? `${deal.user.firstName} ${deal.user.lastName}`
+                          ? deal.user.name
                           : 'Owner'
                       return (
                         <div key={deal.id} draggable onDragStart={(e) => handleDragStart(e, deal.id)}

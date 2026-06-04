@@ -51,10 +51,10 @@ export default function ContactsPage() {
       header: 'Name',
       render: (row) => (
         <div className="flex items-center gap-3">
-          <Avatar src={row.avatarUrl} fallback={`${(row.firstName || 'U')[0]}${(row.lastName || 'S')[0]}`} size="sm" />
+          <Avatar src={row.avatarUrl} name={`${row.firstName} ${row.lastName}`} size="sm" />
           <div>
             <p className="font-title-md text-on-surface">{row.firstName} {row.lastName}</p>
-            <p className="text-label-sm text-on-surface-variant">{row.jobTitle || 'No title provided'}</p>
+            <p className="text-label-sm text-on-surface-variant">{row.title || 'No title provided'}</p>
           </div>
         </div>
       ),
@@ -94,7 +94,7 @@ export default function ContactsPage() {
             className="p-2 rounded-full text-on-surface-variant hover:bg-surface-container-high"
             onClick={(e) => { e.stopPropagation(); navigate(`/contacts/${row.id}/edit`) }}
           >
-            <Icon name="edit" size="sm" />
+            <Icon name="edit" className="text-sm" />
           </Button>
           <Button 
             variant="ghost" 
@@ -102,7 +102,7 @@ export default function ContactsPage() {
             className="p-2 rounded-full text-error hover:bg-error/10"
             onClick={(e) => { e.stopPropagation(); handleDelete(row.id) }}
           >
-            <Icon name="delete" size="sm" />
+            <Icon name="delete" className="text-sm" />
           </Button>
         </div>
       ),
