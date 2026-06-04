@@ -29,12 +29,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const abort = new AbortController()
     const init = async () => {
       const token = await tryRestoreSession()
+      if (abort.signal.aborted) return
       if (token) {
         try {
           const u = await fetchUserFromToken(token, abort.signal)
+          if (abort.signal.aborted) return
           setUser(u)
         } catch {
-          // session restore failed — stay logged out
+          if (abort.signal.aborted) return
         }
       }
       setLoading(false)
