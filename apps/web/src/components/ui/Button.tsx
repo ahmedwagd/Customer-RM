@@ -1,4 +1,4 @@
-import { type ButtonHTMLAttributes, type ReactNode } from 'react'
+﻿import { type ButtonHTMLAttributes, type ReactNode } from 'react'
 import Spinner from './Spinner'
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger'
@@ -15,9 +15,9 @@ const variantStyles: Record<Variant, string> = {
   primary:
     'bg-primary-container text-on-primary-container hover:opacity-90 disabled:opacity-60',
   secondary:
-    'border border-outline-variant bg-surface-container-lowest text-brand-neutral hover:bg-surface-container-high disabled:opacity-50',
+    'border border-outline-variant bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-high disabled:opacity-50',
   ghost:
-    'text-brand-neutral hover:bg-surface-container-high disabled:opacity-50',
+    'text-on-surface-variant hover:bg-surface-container-high disabled:opacity-50',
   danger:
     'bg-error text-on-error hover:opacity-90 disabled:opacity-60',
 }

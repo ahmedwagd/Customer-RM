@@ -1,4 +1,4 @@
-import { Component, type ErrorInfo, type ReactNode } from 'react'
+﻿import { Component, type ErrorInfo, type ReactNode } from 'react'
 
 interface Props {
   children: ReactNode
@@ -36,11 +36,11 @@ export default class ErrorBoundary extends Component<Props, State> {
               !
             </div>
             <h1 className="font-heading text-headline-lg text-on-surface">Something went wrong</h1>
-            <p className="mt-2 text-body-md text-brand-neutral">
+            <p className="mt-2 text-body-md text-on-surface-variant">
               An unexpected error occurred. Please try again.
             </p>
             {this.state.error && (
-              <p className="mt-4 rounded bg-surface-container-high px-4 py-2 text-left text-label-sm text-brand-neutral">
+              <p className="mt-4 rounded bg-surface-container-high px-4 py-2 text-left text-label-sm text-on-surface-variant">
                 {this.state.error.message}
               </p>
             )}

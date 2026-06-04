@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from 'react'
+﻿import { useState, useEffect, type FormEvent } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Button, Input, Dropdown, Skeleton } from '../../components/ui'
 import { getContact, updateContact } from '../../api/contacts'
@@ -97,7 +97,7 @@ export default function EditContact() {
     <div className="mx-auto max-w-2xl">
       <div className="mb-6">
         <h1 className="font-heading text-headline-lg text-on-surface">Edit Contact</h1>
-        <p className="mt-1 text-body-md text-brand-neutral">Update contact information</p>
+        <p className="mt-1 text-body-md text-on-surface-variant">Update contact information</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -127,8 +127,8 @@ export default function EditContact() {
         <Input label="Source" value={form.source} onChange={(e) => setForm({ ...form, source: e.target.value })} />
 
         <div>
-          <label className="mb-1 block text-label-lg text-brand-neutral">Description</label>
-          <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} className="w-full rounded border border-outline-variant bg-surface-container-lowest px-3 py-2.5 text-body-md text-on-surface outline-none transition-all focus:border-2 focus:border-brand-primary" />
+          <label className="mb-1 block text-label-lg text-on-surface-variant">Description</label>
+          <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} className="w-full rounded border border-outline-variant bg-surface-container-lowest px-3 py-2.5 text-body-md text-on-surface outline-none transition-all focus:border-2 focus:border-primary-container" />
         </div>
 
         <div className="flex gap-3">

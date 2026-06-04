@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+﻿import { Link } from 'react-router-dom'
 import Icon from './Icon'
 
 export interface BreadcrumbItem {
@@ -22,7 +22,7 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
               <Icon name="chevron_right" className="text-[16px] text-outline" />
             )}
             {item.href ? (
-              <Link to={item.href} className="text-brand-neutral transition-colors hover:text-primary">
+              <Link to={item.href} className="text-on-surface-variant transition-colors hover:text-primary">
                 {item.label}
               </Link>
             ) : (

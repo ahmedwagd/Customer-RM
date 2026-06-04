@@ -1,4 +1,4 @@
-interface PaginationProps {
+﻿interface PaginationProps {
   page: number
   totalPages: number
   total: number
@@ -20,9 +20,9 @@ export default function Pagination({
 
   return (
     <div className="flex items-center justify-between gap-4 py-3">
-      <div className="flex items-center gap-2 text-body-md text-brand-neutral">
+      <div className="flex items-center gap-2 text-body-md text-on-surface-variant">
         <span>
-          {start}–{end} of {total}
+          {start}{'\u2013'}{end} of {total}
         </span>
         {onLimitChange && (
           <select
@@ -44,7 +44,7 @@ export default function Pagination({
           type="button"
           onClick={() => onPageChange(page - 1)}
           disabled={page <= 1}
-          className="rounded px-3 py-1.5 text-body-md text-brand-neutral transition-colors hover:bg-surface-container-high disabled:opacity-40"
+          className="rounded px-3 py-1.5 text-body-md text-on-surface-variant transition-colors hover:bg-surface-container-high disabled:opacity-40"
         >
           Prev
         </button>
@@ -59,7 +59,7 @@ export default function Pagination({
           .map((p, idx, arr) => (
             <span key={p} className="inline-flex items-center">
               {idx > 0 && arr[idx - 1] !== p - 1 && (
-                <span className="px-1 text-brand-neutral">…</span>
+                <span className="px-1 text-on-surface-variant">{'\u2026'}</span>
               )}
               <button
                 type="button"
@@ -67,7 +67,7 @@ export default function Pagination({
                 className={`rounded px-3 py-1.5 text-body-md transition-colors ${
                   p === page
                     ? 'bg-primary-container text-on-primary-container'
-                    : 'text-brand-neutral hover:bg-surface-container-high'
+                    : 'text-on-surface-variant hover:bg-surface-container-high'
                 }`}
               >
                 {p}
@@ -79,7 +79,7 @@ export default function Pagination({
           type="button"
           onClick={() => onPageChange(page + 1)}
           disabled={page >= totalPages}
-          className="rounded px-3 py-1.5 text-body-md text-brand-neutral transition-colors hover:bg-surface-container-high disabled:opacity-40"
+          className="rounded px-3 py-1.5 text-body-md text-on-surface-variant transition-colors hover:bg-surface-container-high disabled:opacity-40"
         >
           Next
         </button>

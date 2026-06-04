@@ -1,4 +1,4 @@
-interface SpinnerProps {
+﻿interface SpinnerProps {
   size?: 'sm' | 'md' | 'lg'
   className?: string
 }
@@ -15,7 +15,7 @@ export default function Spinner({
 }: SpinnerProps) {
   return (
     <div
-      className={`animate-spin rounded-full border-brand-primary border-t-transparent ${sizeMap[size]} ${className}`}
+      className={`animate-spin rounded-full border-primary-container border-t-transparent ${sizeMap[size]} ${className}`}
     />
   )
 }

@@ -1,4 +1,4 @@
-import { type InputHTMLAttributes, useId } from 'react'
+﻿import { type InputHTMLAttributes, useId } from 'react'
 import Icon from './Icon'
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -30,7 +30,7 @@ export default function Input({
           ${
             error
               ? 'border-error'
-              : 'border-outline-variant focus:border-2 focus:border-brand-primary'
+              : 'border-outline-variant focus:border-2 focus:border-primary-container'
           }
           disabled:opacity-50 disabled:cursor-not-allowed
           ${className}
@@ -46,12 +46,12 @@ export default function Input({
         htmlFor={id}
         className={`
           absolute left-${icon ? '10' : '3'} top-1 origin-[0] text-label-sm transition-all
-          peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-body-md peer-placeholder-shown:text-brand-neutral
+          peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-body-md peer-placeholder-shown:text-on-surface-variant
           peer-focus:top-1 peer-focus:text-label-sm
           ${
             error
               ? 'text-error peer-focus:text-error'
-              : 'text-brand-neutral peer-focus:text-brand-primary'
+              : 'text-on-surface-variant peer-focus:text-primary-container'
           }
         `}
       >

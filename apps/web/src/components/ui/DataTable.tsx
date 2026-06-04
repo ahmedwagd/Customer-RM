@@ -1,4 +1,4 @@
-import { type ReactNode } from 'react'
+﻿import { type ReactNode } from 'react'
 
 export interface Column<T> {
   key: keyof T & string
@@ -33,7 +33,7 @@ export default function DataTable<T>({
     <div className="overflow-x-auto">
       <table className="w-full border-collapse">
         <thead>
-          <tr className="bg-brand-surface-secondary text-label-lg text-brand-neutral">
+          <tr className="bg-surface-container-low text-label-lg text-on-surface-variant">
             {columns.map((col) => (
               <th
                 key={col.key}
@@ -47,7 +47,7 @@ export default function DataTable<T>({
                 <span className="inline-flex items-center gap-1">
                   {col.header}
                   {col.sortable && sortKey === col.key && (
-                    <span className="text-xs">{sortOrder === 'asc' ? '▲' : '▼'}</span>
+                    <span className="text-xs">{sortOrder === 'asc' ? '\u25B2' : '\u25BC'}</span>
                   )}
                 </span>
               </th>
@@ -59,7 +59,7 @@ export default function DataTable<T>({
             <tr>
               <td
                 colSpan={columns.length}
-                className="px-4 py-8 text-center text-body-md text-brand-neutral"
+                className="px-4 py-8 text-center text-body-md text-on-surface-variant"
               >
                 {emptyMessage}
               </td>

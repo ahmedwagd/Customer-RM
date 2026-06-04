@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom'
+﻿import { Outlet } from 'react-router-dom'
 import logo from '../assets/Ma5zan-logo.png'
 
 export default function AuthLayout() {
@@ -7,7 +7,7 @@ export default function AuthLayout() {
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center">
           <img src={logo} alt="Ma5zan" className="mx-auto h-16 w-auto" />
-          <p className="mt-2 font-body text-body-md text-brand-neutral">
+          <p className="mt-2 font-body text-body-md text-on-surface-variant">
             Luminous Enterprise
           </p>
         </div>

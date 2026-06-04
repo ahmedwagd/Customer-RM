@@ -1,5 +1,6 @@
-import { Link, useNavigate } from 'react-router-dom'
+﻿import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import { useTheme } from '../hooks/useTheme'
 import Icon from './ui/Icon'
 import Avatar from './ui/Avatar'
 
@@ -9,6 +10,7 @@ interface TopBarProps {
 
 export default function TopBar({ onMenuToggle }: TopBarProps) {
   const { user } = useAuth()
+  const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
 
   return (
@@ -42,6 +44,13 @@ export default function TopBar({ onMenuToggle }: TopBarProps) {
         <div className="h-6 w-px bg-outline-variant mx-2" />
         <button className="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors" title="Notifications">
           <Icon name="notifications" />
+        </button>
+        <button
+          onClick={toggleTheme}
+          className="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors"
+          title={theme === 'neutral-modernist' ? 'Switch to Luminous Enterprise' : 'Switch to Neutral Modernist'}
+        >
+          <Icon name={theme === 'neutral-modernist' ? 'light_mode' : 'contrast'} />
         </button>
         <button className="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors" title="Help">
           <Icon name="help" />

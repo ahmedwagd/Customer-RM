@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from 'react'
+﻿import { useState, useEffect, type FormEvent } from 'react'
 import { Button, Input, Skeleton } from '../../components/ui'
 import { useAuth } from '../../hooks/useAuth'
 import { useToast } from '../../hooks/useToast'
@@ -76,7 +76,7 @@ export default function ProfilePage() {
 
   if (!profile) {
     return (
-      <div className="mx-auto max-w-2xl py-12 text-center text-body-md text-brand-neutral">
+      <div className="mx-auto max-w-2xl py-12 text-center text-body-md text-on-surface-variant">
         Could not load profile.
       </div>
     )
@@ -87,7 +87,7 @@ export default function ProfilePage() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="font-heading text-headline-lg text-on-surface">Profile</h1>
-          <p className="mt-1 text-body-md text-brand-neutral">Your personal information and activity</p>
+          <p className="mt-1 text-body-md text-on-surface-variant">Your personal information and activity</p>
         </div>
         {!editing && (
           <Button variant="secondary" onClick={() => setEditing(true)}>
@@ -104,7 +104,7 @@ export default function ProfilePage() {
             </div>
             <div>
               <h2 className="font-heading text-title-lg text-on-surface">{profile.name}</h2>
-              <p className="text-body-md text-brand-neutral">{profile.email}</p>
+              <p className="text-body-md text-on-surface-variant">{profile.email}</p>
               <span
                 className="mt-1 inline-block rounded px-2 py-0.5 text-label-sm"
                 style={{
@@ -125,7 +125,7 @@ export default function ProfilePage() {
             ].map((stat) => (
               <div key={stat.label} className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4 text-center">
                 <p className="font-heading text-display-lg text-on-surface">{stat.value}</p>
-                <p className="mt-1 text-label-lg text-brand-neutral">{stat.label}</p>
+                <p className="mt-1 text-label-lg text-on-surface-variant">{stat.label}</p>
               </div>
             ))}
           </div>
@@ -134,11 +134,11 @@ export default function ProfilePage() {
             <h3 className="font-heading text-title-md text-on-surface">Details</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-label-sm text-brand-neutral">Member since</p>
+                <p className="text-label-sm text-on-surface-variant">Member since</p>
                 <p className="text-body-md text-on-surface">{new Date(profile.createdAt).toLocaleDateString()}</p>
               </div>
               <div>
-                <p className="text-label-sm text-brand-neutral">Last updated</p>
+                <p className="text-label-sm text-on-surface-variant">Last updated</p>
                 <p className="text-body-md text-on-surface">{new Date(profile.updatedAt).toLocaleDateString()}</p>
               </div>
             </div>

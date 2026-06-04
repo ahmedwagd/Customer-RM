@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+﻿import { useState, useEffect } from 'react'
 import { useAuth } from '../../hooks/useAuth'
 import { DataTable, SearchBar, Chip, Pagination, TableSkeleton } from '../../components/ui'
 import type { Column } from '../../components/ui'
@@ -44,7 +44,7 @@ export default function UsersPage() {
     { key: 'name', header: 'Name', render: (r) => (
       <div className="flex items-center gap-2">
         <span className="font-medium">{r.name}</span>
-        {r.id === currentUser?.id && <span className="text-label-sm text-brand-neutral">(you)</span>}
+        {r.id === currentUser?.id && <span className="text-label-sm text-on-surface-variant">(you)</span>}
       </div>
     )},
     { key: 'email', header: 'Email' },

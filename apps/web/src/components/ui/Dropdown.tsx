@@ -1,4 +1,4 @@
-import { type SelectHTMLAttributes } from 'react'
+﻿import { type SelectHTMLAttributes } from 'react'
 import Icon from './Icon'
 
 interface DropdownOption {
@@ -26,7 +26,7 @@ export default function Dropdown({
   return (
     <div>
       {label && (
-        <label className="mb-1 block text-label-lg text-brand-neutral">
+        <label className="mb-1 block text-label-lg text-on-surface-variant">
           {label}
         </label>
       )}
@@ -42,7 +42,7 @@ export default function Dropdown({
           } ${
             error
               ? 'border-error'
-              : 'border-outline-variant focus:border-2 focus:border-brand-primary'
+              : 'border-outline-variant focus:border-2 focus:border-primary-container'
           } disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
           {...props}
         >

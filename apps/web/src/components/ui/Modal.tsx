@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect } from 'react'
+﻿import { type ReactNode, useEffect } from 'react'
 
 interface ModalProps {
   open: boolean
@@ -40,9 +40,9 @@ export default function Modal({
             <button
               type="button"
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded text-brand-neutral transition-colors hover:bg-surface-container-high"
+              className="flex h-8 w-8 items-center justify-center rounded text-on-surface-variant transition-colors hover:bg-surface-container-high"
             >
-              ✕
+              {'\u2715'}
             </button>
           </div>
         )}
