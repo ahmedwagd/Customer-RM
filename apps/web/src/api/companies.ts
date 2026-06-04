@@ -24,27 +24,27 @@ export function listCompanies(params?: QueryCompaniesDto): Promise<PaginatedResu
     }
   }
   const qs = searchParams.toString()
-  return apiRequest(`/companies${qs ? `?${qs}` : ''}`)
+  return apiRequest(`/api/companies${qs ? `?${qs}` : ''}`)
 }
 
 export function getCompany(id: string): Promise<Company> {
-  return apiRequest(`/companies/${id}`)
+  return apiRequest(`/api/companies/${id}`)
 }
 
 export function createCompany(dto: CreateCompanyDto): Promise<Company> {
-  return apiRequest('/companies', {
+  return apiRequest('/api/companies', {
     method: 'POST',
     body: JSON.stringify(dto),
   })
 }
 
 export function updateCompany(id: string, dto: UpdateCompanyDto): Promise<Company> {
-  return apiRequest(`/companies/${id}`, {
+  return apiRequest(`/api/companies/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(dto),
   })
 }
 
 export function deleteCompany(id: string): Promise<void> {
-  return apiRequest(`/companies/${id}`, { method: 'DELETE' })
+  return apiRequest(`/api/companies/${id}`, { method: 'DELETE' })
 }

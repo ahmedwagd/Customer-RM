@@ -24,27 +24,27 @@ export function listNotes(params?: QueryNotesDto): Promise<Note[]> {
     }
   }
   const qs = searchParams.toString()
-  return apiRequest(`/notes${qs ? `?${qs}` : ''}`)
+  return apiRequest(`/api/notes${qs ? `?${qs}` : ''}`)
 }
 
 export function getNote(id: string): Promise<Note> {
-  return apiRequest(`/notes/${id}`)
+  return apiRequest(`/api/notes/${id}`)
 }
 
 export function createNote(dto: CreateNoteDto): Promise<Note> {
-  return apiRequest('/notes', {
+  return apiRequest('/api/notes', {
     method: 'POST',
     body: JSON.stringify(dto),
   })
 }
 
 export function updateNote(id: string, dto: UpdateNoteDto): Promise<Note> {
-  return apiRequest(`/notes/${id}`, {
+  return apiRequest(`/api/notes/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(dto),
   })
 }
 
 export function deleteNote(id: string): Promise<void> {
-  return apiRequest(`/notes/${id}`, { method: 'DELETE' })
+  return apiRequest(`/api/notes/${id}`, { method: 'DELETE' })
 }

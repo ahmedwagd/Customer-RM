@@ -29,31 +29,31 @@ export function listUsers(params?: QueryUsersDto): Promise<PaginatedResult<User>
     }
   }
   const qs = searchParams.toString()
-  return apiRequest(`/users${qs ? `?${qs}` : ''}`)
+  return apiRequest(`/api/users${qs ? `?${qs}` : ''}`)
 }
 
 export function getUser(id: string, signal?: AbortSignal): Promise<User> {
-  return apiRequest(`/users/${id}`, { signal })
+  return apiRequest(`/api/users/${id}`, { signal })
 }
 
 export function getMyProfile(): Promise<User & { _count: { contacts: number; deals: number; tasks: number } }> {
-  return apiRequest('/users/me')
+  return apiRequest('/api/users/me')
 }
 
 export function updateMyProfile(dto: UpdateProfileDto): Promise<User> {
-  return apiRequest('/users/me', {
+  return apiRequest('/api/users/me', {
     method: 'PATCH',
     body: JSON.stringify(dto),
   })
 }
 
 export function updateUser(id: string, dto: UpdateUserDto): Promise<User> {
-  return apiRequest(`/users/${id}`, {
+  return apiRequest(`/api/users/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(dto),
   })
 }
 
 export function deleteUser(id: string): Promise<void> {
-  return apiRequest(`/users/${id}`, { method: 'DELETE' })
+  return apiRequest(`/api/users/${id}`, { method: 'DELETE' })
 }

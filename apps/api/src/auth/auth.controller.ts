@@ -97,7 +97,7 @@ export class AuthController {
     return {
       httpOnly: true,
       secure: this.config.isProduction,
-      sameSite: 'strict' as const,
+      sameSite: 'lax' as const,
       path: '/auth',
     };
   }

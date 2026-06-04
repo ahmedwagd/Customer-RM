@@ -31,27 +31,27 @@ export function listDeals(params?: QueryDealsDto): Promise<PaginatedResult<Deal>
     }
   }
   const qs = searchParams.toString()
-  return apiRequest(`/deals${qs ? `?${qs}` : ''}`)
+  return apiRequest(`/api/deals${qs ? `?${qs}` : ''}`)
 }
 
 export function getDeal(id: string): Promise<Deal> {
-  return apiRequest(`/deals/${id}`)
+  return apiRequest(`/api/deals/${id}`)
 }
 
 export function createDeal(dto: CreateDealDto): Promise<Deal> {
-  return apiRequest('/deals', {
+  return apiRequest('/api/deals', {
     method: 'POST',
     body: JSON.stringify(dto),
   })
 }
 
 export function updateDeal(id: string, dto: UpdateDealDto): Promise<Deal> {
-  return apiRequest(`/deals/${id}`, {
+  return apiRequest(`/api/deals/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(dto),
   })
 }
 
 export function deleteDeal(id: string): Promise<void> {
-  return apiRequest(`/deals/${id}`, { method: 'DELETE' })
+  return apiRequest(`/api/deals/${id}`, { method: 'DELETE' })
 }

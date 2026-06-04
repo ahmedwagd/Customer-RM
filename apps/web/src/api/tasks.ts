@@ -30,27 +30,27 @@ export function listTasks(params?: QueryTasksDto): Promise<PaginatedResult<Task>
     }
   }
   const qs = searchParams.toString()
-  return apiRequest(`/tasks${qs ? `?${qs}` : ''}`)
+  return apiRequest(`/api/tasks${qs ? `?${qs}` : ''}`)
 }
 
 export function getTask(id: string): Promise<Task> {
-  return apiRequest(`/tasks/${id}`)
+  return apiRequest(`/api/tasks/${id}`)
 }
 
 export function createTask(dto: CreateTaskDto): Promise<Task> {
-  return apiRequest('/tasks', {
+  return apiRequest('/api/tasks', {
     method: 'POST',
     body: JSON.stringify(dto),
   })
 }
 
 export function updateTask(id: string, dto: UpdateTaskDto): Promise<Task> {
-  return apiRequest(`/tasks/${id}`, {
+  return apiRequest(`/api/tasks/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(dto),
   })
 }
 
 export function deleteTask(id: string): Promise<void> {
-  return apiRequest(`/tasks/${id}`, { method: 'DELETE' })
+  return apiRequest(`/api/tasks/${id}`, { method: 'DELETE' })
 }

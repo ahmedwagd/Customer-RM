@@ -30,20 +30,20 @@ export function listActivities(params?: QueryActivitiesDto): Promise<Activity[]>
     }
   }
   const qs = searchParams.toString()
-  return apiRequest(`/activities${qs ? `?${qs}` : ''}`)
+  return apiRequest(`/api/activities${qs ? `?${qs}` : ''}`)
 }
 
 export function getActivity(id: string): Promise<Activity> {
-  return apiRequest(`/activities/${id}`)
+  return apiRequest(`/api/activities/${id}`)
 }
 
 export function createActivity(dto: CreateActivityDto): Promise<Activity> {
-  return apiRequest('/activities', {
+  return apiRequest('/api/activities', {
     method: 'POST',
     body: JSON.stringify(dto),
   })
 }
 
 export function deleteActivity(id: string): Promise<void> {
-  return apiRequest(`/activities/${id}`, { method: 'DELETE' })
+  return apiRequest(`/api/activities/${id}`, { method: 'DELETE' })
 }

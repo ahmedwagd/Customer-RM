@@ -32,27 +32,27 @@ export function listContacts(params?: QueryContactsDto): Promise<PaginatedResult
     }
   }
   const qs = searchParams.toString()
-  return apiRequest(`/contacts${qs ? `?${qs}` : ''}`)
+  return apiRequest(`/api/contacts${qs ? `?${qs}` : ''}`)
 }
 
 export function getContact(id: string): Promise<Contact> {
-  return apiRequest(`/contacts/${id}`)
+  return apiRequest(`/api/contacts/${id}`)
 }
 
 export function createContact(dto: CreateContactDto): Promise<Contact> {
-  return apiRequest('/contacts', {
+  return apiRequest('/api/contacts', {
     method: 'POST',
     body: JSON.stringify(dto),
   })
 }
 
 export function updateContact(id: string, dto: UpdateContactDto): Promise<Contact> {
-  return apiRequest(`/contacts/${id}`, {
+  return apiRequest(`/api/contacts/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(dto),
   })
 }
 
 export function deleteContact(id: string): Promise<void> {
-  return apiRequest(`/contacts/${id}`, { method: 'DELETE' })
+  return apiRequest(`/api/contacts/${id}`, { method: 'DELETE' })
 }

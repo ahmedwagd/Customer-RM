@@ -17,7 +17,7 @@ interface AuthResponse {
 }
 
 export async function login(dto: LoginDto): Promise<string> {
-  const data = await apiRequest<AuthResponse>('/auth/login', {
+  const data = await apiRequest<AuthResponse>('/api/auth/login', {
     method: 'POST',
     body: JSON.stringify(dto),
   })
@@ -26,7 +26,7 @@ export async function login(dto: LoginDto): Promise<string> {
 }
 
 export async function register(dto: RegisterDto): Promise<string> {
-  const data = await apiRequest<AuthResponse>('/auth/register', {
+  const data = await apiRequest<AuthResponse>('/api/auth/register', {
     method: 'POST',
     body: JSON.stringify(dto),
   })
@@ -35,6 +35,6 @@ export async function register(dto: RegisterDto): Promise<string> {
 }
 
 export async function logout(): Promise<void> {
-  await apiRequest<void>('/auth/logout', { method: 'POST' })
+  await apiRequest<void>('/api/auth/logout', { method: 'POST' })
   setAccessToken(null)
 }
