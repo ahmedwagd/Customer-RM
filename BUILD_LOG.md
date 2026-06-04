@@ -534,3 +534,17 @@
 ### 22d. Verification
 - Ran pnpm typecheck to ensure all new props and components are type-safe.
 - Verified CSS utility applications in index.css.
+
+## 23. Deals Pipeline — Template Alignment (Phase 3)
+
+### 23a. Rewrite (`deals/index.tsx`)
+- Full kanban board matching `deals_pipeline` template:
+  - **Header**: "Deals Pipeline" title + segmented Board/List toggle using `Button` + `Icon` components
+  - **Kanban columns**: 5 horizontal-scroll columns (NEW, QUALIFIED, PROPOSAL, NEGOTIATION, CLOSED_WON) at 300px min-width
+  - **Column headers**: Colored 2px bottom border per stage (`border-b-primary-container` for NEW, `border-b-tertiary` for CLOSED_WON), deal count badge, total value summary
+  - **Deal cards**: "Active" status `Chip`, `more_vert` icon (hidden until hover), title, company name, value in `text-primary`, owner `Avatar`
+  - **Drag-and-drop**: Native HTML5 `draggable` + `onDragOver`/`onDrop` handlers for stage transitions with toast feedback
+  - **Drop zone**: Dashed border placeholder in Proposal column with "Drop here" label
+  - **FAB**: Fixed bottom-right with Material Symbols `add` icon and tooltip "Quick Add Deal" (appears on group hover via CSS opacity transition)
+- Fixed `Avatar` prop usage: changed `initials` to `name` (component API uses `name` prop)
+- TypeScript: `pnpm --filter=web exec npx tsc --noEmit` passes clean
