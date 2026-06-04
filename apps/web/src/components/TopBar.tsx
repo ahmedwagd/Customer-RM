@@ -1,15 +1,16 @@
-﻿import { Link, useNavigate } from 'react-router-dom'
+﻿import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useTheme } from '../hooks/useTheme'
 import Icon from './ui/Icon'
 import Avatar from './ui/Avatar'
+import DropdownMenu from './ui/DropdownMenu'
 
 interface TopBarProps {
   onMenuToggle: () => void
 }
 
 export default function TopBar({ onMenuToggle }: TopBarProps) {
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const navigate = useNavigate()
 
@@ -58,13 +59,17 @@ export default function TopBar({ onMenuToggle }: TopBarProps) {
         <button className="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors" title="Settings">
           <Icon name="settings" />
         </button>
-        <Link
-          to="/profile"
-          className="ml-2 w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden border border-outline-variant"
-          title="Profile"
+        <DropdownMenu
+          items={[
+            { label: 'Profile', icon: 'person', onClick: () => navigate('/profile') },
+            { separator: true },
+            { label: 'Logout', icon: 'logout', onClick: () => { logout(); navigate('/login') }, danger: true },
+          ]}
         >
-          <Avatar name={user?.name ?? 'User'} size="sm" />
-        </Link>
+          <span className="ml-2 w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden border border-outline-variant" title="User menu">
+            <Avatar name={user?.name ?? 'User'} size="sm" />
+          </span>
+        </DropdownMenu>
       </div>
     </header>
   )
