@@ -12,7 +12,7 @@ const sizeMap = {
 }
 
 function getInitials(name: string): string {
-  if (!name.trim()) return '??'
+  if (!name || !name.trim()) return '??'
   return name
     .split(' ')
     .map((n) => n[0])
