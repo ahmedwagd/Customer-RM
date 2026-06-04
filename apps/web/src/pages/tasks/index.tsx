@@ -292,7 +292,7 @@ export default function TasksPage() {
             <div className="space-y-4">
               {meetings.map((m, i) => (
                 <div key={i} className="flex gap-4 p-3 rounded-lg hover:bg-surface-container-low transition-colors cursor-pointer border border-transparent hover:border-outline-variant">
-                  <div className={`${m.bgClass} p-2 rounded-lg flex flex-col items-center justify-center min-w-[50px] h-[50px]`}>
+                  <div className={`${m.bgClass} p-2 rounded-lg flex flex-col items-center justify-center min-w-12.5 h-12.5`}>
                     <span className="text-label-sm font-bold uppercase">{m.month}</span>
                     <span className="text-title-lg font-black leading-none">{m.day}</span>
                   </div>
@@ -311,7 +311,7 @@ export default function TasksPage() {
               ))}
             </div>
             <div className="mt-2 rounded-xl overflow-hidden h-32 relative group">
-              <div className="w-full h-full bg-gradient-to-br from-primary/30 to-secondary-container/40 flex items-end p-4">
+              <div className="w-full h-full bg-linear-to-br from-primary/30 to-secondary-container/40 flex items-end p-4">
                 <span className="text-white text-label-lg font-medium drop-shadow-md">Team Workshop - Nov 3rd</span>
               </div>
             </div>

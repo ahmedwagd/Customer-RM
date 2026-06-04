@@ -143,7 +143,7 @@ export default function Dashboard() {
                 </div>
               </div>
             </div>
-            <div className="relative h-64 w-full bg-gradient-to-b from-primary/10 to-transparent rounded-lg border-b border-l border-outline-variant">
+            <div className="relative h-64 w-full bg-linear-to-b from-primary/10 to-transparent rounded-lg border-b border-l border-outline-variant">
               <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 400 100">
                 <path d="M0,80 Q50,60 100,70 T200,30 T300,50 T400,20" fill="none" stroke="#1a73e8" strokeWidth="3" />
                 <path d="M0,90 Q50,70 100,80 T200,40 T300,60 T400,30" fill="none" stroke="#c1c6d6" strokeDasharray="4" strokeWidth="2" />

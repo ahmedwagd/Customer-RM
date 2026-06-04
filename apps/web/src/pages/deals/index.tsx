@@ -71,7 +71,7 @@ export default function DealsPage() {
         </div>
         <div className="flex gap-6 overflow-x-auto">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="flex flex-col gap-3 rounded-lg border border-outline-variant bg-surface-container-low p-3 min-w-[300px] w-[320px]">
+            <div key={i} className="flex flex-col gap-3 rounded-lg border border-outline-variant bg-surface-container-low p-3 min-w-75 w-80">
               <Skeleton className="mb-2 h-6 w-1/2" />
               <Skeleton className="h-24 w-full" />
               <Skeleton className="h-24 w-full" />
@@ -122,7 +122,7 @@ export default function DealsPage() {
               const stageDeals = deals.filter((d) => d.stage === stage)
               const stageTotal = getTotalValue(stageDeals)
               return (
-                <div key={stage} className="flex flex-col h-full min-w-[300px] w-[320px]"
+                <div key={stage} className="flex flex-col h-full min-w-75 w-80"
                   onDragOver={(e) => e.preventDefault()} onDrop={(e) => handleDrop(e, stage)}>
                   {/* Column Header */}
                   <div className={`flex justify-between items-center py-3 mb-2 border-b-2 ${stageBorderColors[stage] ?? 'border-b-surface-container-highest'}`}>
