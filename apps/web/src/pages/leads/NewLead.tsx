@@ -49,11 +49,11 @@ export default function NewLead() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className="mx-auto max-w-4xl px-container-margin">
       <div className="mb-stack-lg flex items-center justify-between">
         <div>
           <h1 className="font-headline-lg text-headline-lg text-on-surface">Create New Lead</h1>
-          <p className="text-body-md text-on-surface-variant mt-1">Capture details for a potential new business relationship.</p>
+          <p className="text-body-md text-on-surface-variant mt-stack-sm">Capture details for a potential new business relationship.</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="secondary" onClick={() => navigate('/leads')}>Cancel</Button>
@@ -66,7 +66,7 @@ export default function NewLead() {
       )}
 
       <form id="lead-form" onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-stack-lg">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter">
           <div className="md:col-span-8 bg-surface-container-lowest rounded-xl border border-outline-variant p-stack-lg shadow-sm">
             <h2 className="font-title-lg text-title-lg mb-stack-md flex items-center gap-2">
               <Icon name="person" className="text-primary" />

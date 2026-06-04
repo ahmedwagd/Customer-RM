@@ -49,7 +49,7 @@ export default function NewContact() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div className="mx-auto max-w-5xl px-container-margin">
       <div className="mb-stack-lg flex items-center justify-between">
         <div>
           <button
@@ -90,7 +90,7 @@ export default function NewContact() {
                 </div>
               </div>
               <h3 className="font-heading text-title-lg mt-4">Contact Image</h3>
-              <p className="text-on-surface-variant text-body-md mt-1">Upload a professional photo (JPG, PNG, max 2MB)</p>
+              <p className="text-on-surface-variant text-body-md mt-stack-sm">Upload a professional photo (JPG, PNG, max 2MB)</p>
             </div>
 
             <div className="bg-primary-container/10 border border-primary/20 rounded-xl p-stack-lg">
@@ -111,12 +111,14 @@ export default function NewContact() {
                   label="First Name"
                   value={form.firstName}
                   onChange={(e) => setForm({ ...form, firstName: e.target.value })}
+                  placeholder="e.g. John"
                   required
                 />
                 <Input
                   label="Last Name"
                   value={form.lastName}
                   onChange={(e) => setForm({ ...form, lastName: e.target.value })}
+                  placeholder="e.g. Smith"
                   required
                 />
               </div>
@@ -141,6 +143,7 @@ export default function NewContact() {
                   icon="mail"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  placeholder="email@company.com"
                 />
                 <Input
                   label="Mobile Number"
@@ -148,6 +151,7 @@ export default function NewContact() {
                   icon="call"
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  placeholder="+1 (555) 000-0000"
                 />
               </div>
 
@@ -165,7 +169,7 @@ export default function NewContact() {
               </div>
             </div>
 
-            <div className="p-6 rounded-xl bg-surface-container-high/50 border border-outline-variant/30 backdrop-blur-md">
+            <div className="p-stack-lg rounded-xl bg-surface-container-high/50 border border-outline-variant/30 backdrop-blur-md">
               <div className="flex items-center gap-4">
                 <div className="flex-1">
                   <p className="text-label-sm text-outline">Lead Score Preview</p>

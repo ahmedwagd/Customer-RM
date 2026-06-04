@@ -67,7 +67,7 @@ export default function NewDeal() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="max-w-5xl mx-auto px-container-margin">
       <div className="mb-stack-lg">
         <Breadcrumbs items={breadcrumbItems} />
         <h2 className="font-heading text-headline-lg font-bold text-on-surface">New Sales Deal</h2>
